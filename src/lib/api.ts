@@ -1,0 +1,275 @@
+import type { Locale } from '@/i18n'
+import type {
+  ApiResponse,
+  Booking,
+  BookingCreatePayload,
+  Competition,
+  DailySlots,
+  GalleryItem,
+  Inquiry,
+  InquiryCreatePayload,
+  Post,
+  Product,
+} from '@/types'
+import {
+  ADMIN_INQUIRIES,
+  COMPETITIONS,
+  POSTS,
+  PRODUCTS,
+  galleryItems,
+} from '@/mocks/data'
+import { delay, toDateKey } from './utils'
+import { BOOKING_POLICY, latestBookableDate } from './bookingPolicy'
+
+const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
+
+/** 백엔드 PageResponse<T> 와 동일한 형태 */
+interface PageResponse<T> {
+  content: T[]
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
+  first: boolean
+  last: boolean
+}
+
+/** 백엔드 연동 시 사용. 실패하면 ApiError 를 던집니다. */
+export class ApiError extends Error {
+  constructor(
+    public code: string,
+    message: string,
+  ) {
+    super(message)
+  }
+}
+
+async function request<T>(path: string, locale: Locale, init?: RequestInit): Promise<T> {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      // 백엔드 ApiLocaleResolver 가 읽는 헤더
+      'X-Locale': locale,
+      ...init?.headers,
+    },
+  })
+
+  const json = (await res.json()) as ApiResponse<T>
+
+  if (!res.ok || !json.success) {
+    throw new ApiError(json.error?.code ?? 'UNKNOWN', json.error?.message ?? 'Request failed')
+  }
+  return json.data as T
+}
+
+// =====================================================================
+//  목 구현 — 백엔드 SlotService/BookingService 의 규칙을 그대로 흉내냅니다.
+// =====================================================================
+
+const {
+  slotStepMin: SLOT_STEP_MIN,
+  bufferMin: BUFFER_MIN,
+  openHour: OPEN_HOUR,
+  closeHour: CLOSE_HOUR,
+  closedWeekday: CLOSED_WEEKDAY,
+  minLeadHours: MIN_LEAD_HOURS,
+} = BOOKING_POLICY
+
+/** 날짜+시각으로 결정되는 의사난수 — 새로고침해도 마감 슬롯이 흔들리지 않게 */
+function pseudoRandom(seed: string): number {
+  let h = 2166136261
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i)
+    h = Math.imul(h, 16777619)
+  }
+  return ((h >>> 0) % 1000) / 1000
+}
+
+function pad(n: number) {
+  return String(n).padStart(2, '0')
+}
+
+function mockDailySlots(productId: number, date: string, locale: Locale): DailySlots {
+  const product = PRODUCTS[locale].find((p) => p.id === productId)
+  const target = new Date(date + 'T00:00:00')
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const maxDate = latestBookableDate()
+
+  if (!product) {
+    return { productId, date, open: false, closedReason: 'OUT_OF_RANGE', slots: [] }
+  }
+  if (target < today || target > maxDate) {
+    return { productId, date, open: false, closedReason: 'OUT_OF_RANGE', slots: [] }
+  }
+  if (target.getDay() === CLOSED_WEEKDAY) {
+    return { productId, date, open: false, closedReason: 'CLOSED_DAY', slots: [] }
+  }
+
+  const totalMin = product.durationMin + BUFFER_MIN
+  const slots = []
+
+  for (let min = OPEN_HOUR * 60; min + totalMin <= CLOSE_HOUR * 60; min += SLOT_STEP_MIN) {
+    const startH = Math.floor(min / 60)
+    const startM = min % 60
+    const endMin = min + totalMin
+    const startAt = `${date}T${pad(startH)}:${pad(startM)}`
+    const endAt = `${date}T${pad(Math.floor(endMin / 60))}:${pad(endMin % 60)}`
+
+    // 약 30% 를 이미 예약된 것으로 표시해 실제 운영처럼 보이게 합니다.
+    const taken = pseudoRandom(`${date}-${productId}-${min}`) < 0.3
+
+    // 리드타임 이내는 신청 불가
+    const startDate = new Date(startAt)
+    const tooLate = startDate.getTime() - Date.now() < MIN_LEAD_HOURS * 3600 * 1000
+
+    slots.push({ startAt, endAt, available: !taken && !tooLate })
+  }
+
+  return { productId, date, open: true, closedReason: null, slots }
+}
+
+function mockBookingCode(): string {
+  const alphabet = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
+  const suffix = Array.from(
+    { length: 4 },
+    () => alphabet[Math.floor(Math.random() * alphabet.length)],
+  ).join('')
+  return `MH-${toDateKey(new Date()).replace(/-/g, '')}-${suffix}`
+}
+
+// =====================================================================
+//  공개 API
+// =====================================================================
+
+export const api = {
+  async getProducts(locale: Locale): Promise<Product[]> {
+    if (!USE_MOCK) return request<Product[]>('/products', locale)
+    await delay(180)
+    return PRODUCTS[locale]
+  },
+
+  async getDailySlots(productId: number, date: string, locale: Locale): Promise<DailySlots> {
+    if (!USE_MOCK) {
+      return request<DailySlots>(`/products/${productId}/slots?date=${date}`, locale)
+    }
+    await delay(220)
+    return mockDailySlots(productId, date, locale)
+  },
+
+  async createBooking(payload: BookingCreatePayload, locale: Locale): Promise<Booking> {
+    if (!USE_MOCK) {
+      return request<Booking>('/bookings', locale, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      })
+    }
+
+    await delay(700)
+
+    const product = PRODUCTS[locale].find((p) => p.id === payload.productId)
+    const start = new Date(payload.startAt)
+    const end = new Date(start.getTime() + ((product?.durationMin ?? 60) + BUFFER_MIN) * 60_000)
+
+    return {
+      bookingCode: mockBookingCode(),
+      productName: product?.name ?? '',
+      durationMin: product?.durationMin ?? 60,
+      startAt: payload.startAt,
+      endAt: `${toDateKey(end)}T${pad(end.getHours())}:${pad(end.getMinutes())}`,
+      status: 'REQUESTED',
+      name: payload.name,
+      maskedPhone: payload.phone.slice(0, 3) + '*'.repeat(Math.max(0, payload.phone.length - 3)),
+      maskedEmail: payload.email.replace(/^(.)(.*)(@.*)$/, (_, a, b, c) => a + '*'.repeat(b.length) + c),
+      memo: payload.memo ?? null,
+      basePrice: product?.price ?? 0,
+      options: (payload.options ?? []).map((sel) => {
+        const opt = product?.options?.find((o) => o.id === sel.optionId)
+        const unitPrice = opt?.price ?? 0
+        return {
+          name: opt?.name ?? '',
+          unitPrice,
+          quantity: sel.quantity,
+          amount: unitPrice * sel.quantity,
+        }
+      }),
+      totalPrice:
+        (product?.price ?? 0) +
+        (payload.options ?? []).reduce((sum, sel) => {
+          const opt = product?.options?.find((o) => o.id === sel.optionId)
+          return sum + (opt?.price ?? 0) * sel.quantity
+        }, 0),
+      createdAt: new Date().toISOString(),
+    }
+  },
+
+  async getCompetitions(locale: Locale): Promise<Competition[]> {
+    if (!USE_MOCK) return request<Competition[]>('/competitions', locale)
+    await delay(160)
+    return COMPETITIONS[locale]
+  },
+
+  async getGallery(locale: Locale): Promise<GalleryItem[]> {
+    if (!USE_MOCK) return request<GalleryItem[]>('/gallery', locale)
+    await delay(200)
+    return galleryItems(locale)
+  },
+
+  /**
+   * 기획서 §3.2 폴백 정책: 요청 언어의 번역이 없는 글은 목록에서 제외합니다.
+   *
+   * 실제 API 에서는 서버가 이미 걸러서 내려줍니다(번역 없는 글은 쿼리에서 빠짐).
+   * 목 모드에서만 availableLocales 로 흉내냅니다.
+   *
+   * 서버는 페이지 응답을 주므로 content 만 꺼내 씁니다.
+   * 미디어 글이 수백 건이 되면 그때 무한스크롤로 바꾸면 됩니다.
+   */
+  async getPosts(locale: Locale): Promise<Post[]> {
+    if (!USE_MOCK) {
+      const page = await request<PageResponse<Post>>('/posts?size=50', locale)
+      return page.content
+    }
+    await delay(180)
+    return POSTS[locale].filter((p) => p.availableLocales?.includes(locale) ?? true)
+  },
+
+  async getPost(slug: string, locale: Locale): Promise<Post | null> {
+    if (!USE_MOCK) {
+      try {
+        return await request<Post>(`/posts/${encodeURIComponent(slug)}`, locale)
+      } catch (error) {
+        // 번역이 없는 글을 직접 URL 로 열면 서버가 404(P001)를 줍니다.
+        // 그건 오류가 아니라 "이 언어에는 없는 글"이므로 null 로 바꿔
+        // 상세 화면이 안내 문구를 띄우게 합니다.
+        if (error instanceof ApiError && error.code === 'P001') return null
+        throw error
+      }
+    }
+    await delay(150)
+    return POSTS[locale].find((p) => p.slug === slug) ?? null
+  },
+
+  async createInquiry(payload: InquiryCreatePayload, locale: Locale): Promise<{ id: number }> {
+    if (!USE_MOCK) {
+      return request<{ id: number }>('/inquiries', locale, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      })
+    }
+    await delay(650)
+    return { id: Math.floor(Math.random() * 10000) }
+  },
+
+  // ===== 관리자 =====
+
+  async getAdminInquiries(): Promise<Inquiry[]> {
+    if (!USE_MOCK) {
+      const page = await request<PageResponse<Inquiry>>('/admin/inquiries?size=50', 'ko')
+      return page.content
+    }
+    await delay(200)
+    return ADMIN_INQUIRIES
+  },
+}
