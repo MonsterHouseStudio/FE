@@ -252,7 +252,7 @@
     "password": "비밀번호",
     "loginCta": "로그인",
     "logout": "로그아웃",
-    "loginHint": "데모 환경입니다. 아무 값이나 입력하면 들어갑니다.",
+    "loginHint": "관리자 계정으로 로그인하세요. 5회 연속 실패하면 15분간 잠깁니다.",
     "dashboard": "대시보드",
     "products": "촬영 상품",
     "bookings": "예약 관리",
@@ -293,8 +293,7 @@
     "closeTime": "마감",
     "dayOff": "휴무",
     "specialDay": "특별 영업",
-    "weekday": "요일",
-    "demoNotice": "목 데이터로 동작하는 화면입니다. 실제 저장은 백엔드 연동 후 동작합니다."
+    "weekday": "요일"
   },
   "days": {
     "mon": "월",

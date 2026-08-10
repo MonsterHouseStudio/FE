@@ -1,39 +1,32 @@
 import type { Locale } from '@/i18n'
 import type {
+  AdminBooking,
+  AdminCompetition,
+  AdminGalleryItem,
+  AdminInquiry,
+  AdminProduct,
   ApiResponse,
+  Availability,
   Booking,
   BookingCreatePayload,
+  BookingStatus,
   Competition,
   DailySlots,
+  DashboardSummary,
   GalleryItem,
-  Inquiry,
   InquiryCreatePayload,
+  InquiryStatus,
+  PageResponse,
   Post,
   Product,
 } from '@/types'
-import {
-  ADMIN_INQUIRIES,
-  COMPETITIONS,
-  POSTS,
-  PRODUCTS,
-  galleryItems,
-} from '@/mocks/data'
+import { COMPETITIONS, POSTS, PRODUCTS, galleryItems } from '@/mocks/data'
+import { currentAccessToken, refreshAccessToken } from '@/store/adminAuth'
 import { delay, toDateKey } from './utils'
 import { BOOKING_POLICY, latestBookableDate } from './bookingPolicy'
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
-
-/** 백엔드 PageResponse<T> 와 동일한 형태 */
-interface PageResponse<T> {
-  content: T[]
-  page: number
-  size: number
-  totalElements: number
-  totalPages: number
-  first: boolean
-  last: boolean
-}
 
 /** 백엔드 연동 시 사용. 실패하면 ApiError 를 던집니다. */
 export class ApiError extends Error {
@@ -262,14 +255,145 @@ export const api = {
     return { id: Math.floor(Math.random() * 10000) }
   },
 
-  // ===== 관리자 =====
+}
 
-  async getAdminInquiries(): Promise<Inquiry[]> {
-    if (!USE_MOCK) {
-      const page = await request<PageResponse<Inquiry>>('/admin/inquiries?size=50', 'ko')
-      return page.content
-    }
-    await delay(200)
-    return ADMIN_INQUIRIES
-  },
+// =====================================================================
+//  관리자 API
+//
+//  공개 API 와 달리 목 구현이 없습니다.
+//  관리자 화면은 "실제 데이터를 실제로 바꾸는" 것이 목적이라
+//  가짜 응답으로 확인해봐야 의미가 없기 때문입니다.
+//  따라서 VITE_USE_MOCK 값과 무관하게 항상 백엔드를 호출합니다.
+// =====================================================================
+
+/**
+ * 액세스 토큰을 붙이고, 만료되면 한 번 재발급 후 재시도합니다.
+ *
+ * retry 플래그로 1회로 제한하는 이유:
+ *   재발급까지 실패했는데 계속 재시도하면 무한 루프가 됩니다.
+ *   두 번째 401 은 "정말 권한이 없다"는 뜻이므로 그대로 던져
+ *   AdminLayout 이 로그인 화면으로 보내게 합니다.
+ */
+async function adminRequest<T>(path: string, init?: RequestInit, retry = true): Promise<T> {
+  const token = currentAccessToken()
+
+  const res = await fetch(`${BASE_URL}${path}`, {
+    ...init,
+    // 재발급 요청에 리프레시 쿠키가 실려야 합니다.
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      // 관리자 화면은 한국어 고정입니다 (사장님이 보는 화면).
+      'X-Locale': 'ko',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...init?.headers,
+    },
+  })
+
+  if (res.status === 401 && retry) {
+    const session = await refreshAccessToken()
+    if (session) return adminRequest<T>(path, init, false)
+  }
+
+  // 본문 없는 응답(204)도 있습니다. json() 을 그냥 부르면 여기서 터집니다.
+  if (res.status === 204) return undefined as T
+
+  const json = (await res.json().catch(() => null)) as ApiResponse<T> | null
+
+  if (!res.ok || !json?.success) {
+    throw new ApiError(json?.error?.code ?? 'UNKNOWN', json?.error?.message ?? '요청에 실패했습니다.')
+  }
+  return json.data as T
+}
+
+function query(params: Record<string, string | number | undefined | null>): string {
+  const entries = Object.entries(params).filter(
+    ([, v]) => v !== undefined && v !== null && v !== '',
+  )
+  return entries.length ? '?' + new URLSearchParams(entries.map(([k, v]) => [k, String(v)])) : ''
+}
+
+export const adminApi = {
+  // ----- 대시보드 -----
+  getDashboard: () => adminRequest<DashboardSummary>('/admin/dashboard'),
+
+  // ----- 예약 -----
+  getBookings: (params: {
+    status?: BookingStatus | ''
+    from?: string
+    to?: string
+    keyword?: string
+    page?: number
+    size?: number
+  }) => adminRequest<PageResponse<AdminBooking>>('/admin/bookings' + query(params)),
+
+  getCalendar: (from: string, to: string) =>
+    adminRequest<Booking[]>(`/admin/bookings/calendar${query({ from, to })}`),
+
+  confirmBooking: (id: number) =>
+    adminRequest<Booking>(`/admin/bookings/${id}/confirm`, { method: 'POST' }),
+
+  completeBooking: (id: number) =>
+    adminRequest<Booking>(`/admin/bookings/${id}/complete`, { method: 'POST' }),
+
+  cancelBooking: (id: number, reason?: string) =>
+    adminRequest<Booking>(`/admin/bookings/${id}/cancel`, {
+      method: 'POST',
+      body: JSON.stringify({ reason: reason ?? '' }),
+    }),
+
+  /** startAt 형식은 "yyyy-MM-ddTHH:mm" 입니다 (초를 붙이면 400). */
+  rescheduleBooking: (id: number, startAt: string) =>
+    adminRequest<Booking>(`/admin/bookings/${id}/reschedule`, {
+      method: 'POST',
+      body: JSON.stringify({ startAt }),
+    }),
+
+  // ----- 문의 -----
+  getInquiries: (params: { status?: InquiryStatus | ''; page?: number; size?: number }) =>
+    adminRequest<PageResponse<AdminInquiry>>('/admin/inquiries' + query(params)),
+
+  handleInquiry: (id: number, adminMemo?: string) =>
+    adminRequest<AdminInquiry>(`/admin/inquiries/${id}/handle`, {
+      method: 'POST',
+      body: JSON.stringify({ adminMemo: adminMemo ?? '' }),
+    }),
+
+  reopenInquiry: (id: number) =>
+    adminRequest<AdminInquiry>(`/admin/inquiries/${id}/pending`, { method: 'POST' }),
+
+  // ----- 상품 -----
+  getProducts: () => adminRequest<AdminProduct[]>('/admin/products'),
+
+  setProductActive: (id: number, active: boolean) =>
+    adminRequest<AdminProduct>(`/admin/products/${id}/active${query({ active: String(active) })}`, {
+      method: 'PATCH',
+    }),
+
+  // ----- 대회 일정 -----
+  getCompetitions: () => adminRequest<AdminCompetition[]>('/admin/competitions'),
+
+  deleteCompetition: (id: number) =>
+    adminRequest<void>(`/admin/competitions/${id}`, { method: 'DELETE' }),
+
+  // ----- 갤러리 -----
+  getGallery: () => adminRequest<AdminGalleryItem[]>('/admin/gallery'),
+
+  setGalleryConsent: (id: number, consent: boolean, consentNote?: string) =>
+    adminRequest<AdminGalleryItem>(`/admin/gallery/${id}/consent`, {
+      method: 'PATCH',
+      body: JSON.stringify({ consent, consentNote: consentNote ?? '' }),
+    }),
+
+  deleteGalleryItem: (id: number) =>
+    adminRequest<void>(`/admin/gallery/${id}`, { method: 'DELETE' }),
+
+  // ----- 영업시간 -----
+  getAvailability: () => adminRequest<Availability[]>('/admin/availability'),
+
+  saveAvailability: (items: Availability[]) =>
+    adminRequest<Availability[]>('/admin/availability', {
+      method: 'PUT',
+      body: JSON.stringify(items),
+    }),
 }

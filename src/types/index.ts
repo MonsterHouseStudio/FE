@@ -162,6 +162,165 @@ export interface InquiryCreatePayload {
   website?: string
 }
 
+// =====================================================================
+//  관리자 전용 (인증 필요)
+// =====================================================================
+
+/**
+ * ★ 백엔드 LocaleCode 는 enum 이름 그대로 "KO" / "JA" 로 내려옵니다.
+ *   프론트의 Locale 은 'ko' / 'ja' 라 대소문자가 다릅니다.
+ *
+ *   그냥 Locale 로 타이핑해두면 `t.locale === 'ko'` 같은 비교가 **항상 false** 인데
+ *   컴파일도 통과하고 화면도 안 깨져서 발견이 늦습니다.
+ *   (실제로 한국 대회 목록에 일본어 제목이 뜨고, 번역 누락 배지가 영영 안 나왔습니다.)
+ *
+ *   타입을 분리해 두면 컴파일러가 잘못된 비교를 전부 잡아줍니다.
+ *   화면에 쓸 때는 toLocale() 로 변환하세요.
+ */
+export type ServerLocale = 'KO' | 'JA'
+
+/**
+ * 고객용 Booking 과 별개인 이유:
+ *   고객 응답은 전화·이메일이 마스킹되어 있습니다(maskedPhone).
+ *   관리자는 실제로 연락해야 하므로 원본 값을 받습니다.
+ */
+export interface AdminBooking {
+  id: number
+  bookingCode: string
+  productName: string
+  durationMin: number
+  startAt: string
+  endAt: string
+  status: BookingStatus
+  name: string
+  phone: string
+  email: string
+  locale: ServerLocale
+  memo: string | null
+  totalPrice: number
+  optionSummary: string[]
+  createdAt: string
+}
+
+export interface AdminInquiry {
+  id: number
+  type: InquiryType
+  name: string
+  contact: string
+  email: string
+  locale: ServerLocale
+  content: string
+  status: InquiryStatus
+  createdAt: string
+  handledAt: string | null
+  handledBy: string | null
+  adminMemo: string | null
+}
+
+export interface AdminProduct {
+  id: number
+  type: ProductType
+  nameKo: string
+  nameJa: string | null
+  descriptionKo: string | null
+  descriptionJa: string | null
+  durationMin: number
+  price: number
+  currency: string
+  includesKo: string[]
+  includesJa: string[]
+  active: boolean
+  sortOrder: number
+  priceUnit: PriceUnit
+  bookable: boolean
+  noteKo: string | null
+  noteJa: string | null
+  options: { id: number; name: string; price: number; maxQuantity: number }[]
+  /** 일본어 이름이 비어 있으면 false — 목록에서 "번역 필요" 배지를 띄웁니다 */
+  translated: boolean
+}
+
+export interface AdminGalleryItem {
+  id: number
+  category: GalleryCategory
+  imageKey: string
+  thumbKey: string | null
+  imageUrl: string | null
+  thumbUrl: string | null
+  ratio: 'portrait' | 'landscape' | 'square'
+  takenAt: string | null
+  /** 기획서 §9 — 모델 동의 없이는 공개 갤러리에 나가지 않습니다 */
+  consent: boolean
+  consentNote: string | null
+  sortOrder: number
+  translations: { locale: ServerLocale; caption: string }[]
+  missingLocales: ServerLocale[]
+}
+
+/**
+ * 대회는 언어별 독립 발행이라 번역 테이블 구조가 그대로 올라옵니다 (기획서 §3.2).
+ * 공개 API 는 요청 언어 한 벌만 평평하게 내려주지만,
+ * 관리자는 번역 누락을 봐야 하므로 전체 번역과 missingLocales 를 함께 받습니다.
+ */
+export interface CompetitionTranslation {
+  locale: ServerLocale
+  name: string
+  description: string | null
+  place: string | null
+  host: string | null
+}
+
+export interface AdminCompetition {
+  id: number
+  country: Country
+  startDate: string
+  endDate: string
+  link: string | null
+  published: boolean
+  translations: CompetitionTranslation[]
+  missingLocales: ServerLocale[]
+}
+
+export type Weekday =
+  | 'MONDAY'
+  | 'TUESDAY'
+  | 'WEDNESDAY'
+  | 'THURSDAY'
+  | 'FRIDAY'
+  | 'SATURDAY'
+  | 'SUNDAY'
+
+export interface Availability {
+  id: number | null
+  dayOfWeek: Weekday
+  /** "HH:mm" */
+  openTime: string | null
+  closeTime: string | null
+  /** false 면 그 요일은 휴무입니다 */
+  active: boolean
+}
+
+export interface DashboardSummary {
+  todayBookings: number
+  pendingBookings: number
+  pendingInquiries: number
+  galleryAwaitingConsent: number
+  monthRevenue: number
+  recentBookings: AdminBooking[]
+  recentInquiries: AdminInquiry[]
+}
+
+/** 백엔드 PageResponse<T> 와 동일한 형태 */
+export interface PageResponse<T> {
+  content: T[]
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
+  first: boolean
+  last: boolean
+}
+
 /** 백엔드 ApiResponse<T> 와 동일한 형태 */
 export interface ApiResponse<T> {
   success: boolean

@@ -2,7 +2,6 @@ import type { Locale } from '@/i18n'
 import type {
   Competition,
   GalleryItem,
-  Inquiry,
   Post,
   Product,
 } from '@/types'
@@ -547,49 +546,3 @@ export const CREW: Record<Locale, { name: string; role: string; bio: string; see
 
 // ===================== 관리자 목 데이터 =====================
 
-export const ADMIN_INQUIRIES: Inquiry[] = [
-  {
-    id: 1,
-    type: 'INTERPRETER',
-    name: '田中 健',
-    contact: 'LINE: tanaka_k',
-    email: 'tanaka@example.jp',
-    locale: 'ja',
-    content: '10月の大阪オープンに参加します。計量と申込の通訳をお願いしたいです。',
-    status: 'PENDING',
-    createdAt: futureDate(-1) + 'T09:12:00',
-  },
-  {
-    id: 2,
-    type: 'VIDEO',
-    name: '김성호',
-    contact: '010-2345-6789',
-    email: 'sungho@example.com',
-    locale: 'ko',
-    content: '센터 홍보 영상 3편 제작 가능한지 문의드립니다. 예산 범위도 알려주세요.',
-    status: 'PENDING',
-    createdAt: futureDate(-2) + 'T14:40:00',
-  },
-  {
-    id: 3,
-    type: 'INTERPRETER',
-    name: '佐藤 美咲',
-    contact: 'LINE: misaki.s',
-    email: 'misaki@example.jp',
-    locale: 'ja',
-    content: 'ソウルのジムを見学したいのですが、同行通訳は可能でしょうか。',
-    status: 'HANDLED',
-    createdAt: futureDate(-5) + 'T11:05:00',
-  },
-  {
-    id: 4,
-    type: 'VIDEO',
-    name: '이현우',
-    contact: '010-8888-1234',
-    email: 'hyunwoo@example.com',
-    locale: 'ko',
-    content: '바디프로필 촬영 후 숏폼 추가 편집이 가능한지 궁금합니다.',
-    status: 'HANDLED',
-    createdAt: futureDate(-8) + 'T16:22:00',
-  },
-]

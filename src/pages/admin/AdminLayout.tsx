@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link, NavLink, Navigate, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAdminAuth } from '@/store/adminAuth'
@@ -17,7 +18,21 @@ const MENU = [
 
 export default function AdminLayout() {
   const { t } = useTranslation()
-  const { token, username, logout } = useAdminAuth()
+  const { token, username, displayName, role, ready, restore, logout } = useAdminAuth()
+
+  // 탭을 닫았다 열면 sessionStorage 는 비어 있지만 리프레시 쿠키는 살아 있습니다.
+  // 그 경우를 조용히 복구합니다. 끝나기 전에 판단하면 멀쩡한 세션을 로그아웃시킵니다.
+  useEffect(() => {
+    if (!ready) void restore()
+  }, [ready, restore])
+
+  if (!ready) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-ink-950 text-sm text-ink-500">
+        불러오는 중…
+      </div>
+    )
+  }
 
   if (!token) {
     return <Navigate to="/admin/login" replace />
@@ -56,7 +71,14 @@ export default function AdminLayout() {
         </nav>
 
         <div className="border-t border-ink-800 p-4">
-          <div className="px-2 pb-3 text-xs text-ink-500">{username}</div>
+          <div className="px-2 pb-3 text-xs text-ink-500">
+            {displayName ?? username}
+            {role === 'SUPER_ADMIN' && (
+              <span className="ml-1.5 rounded bg-brand-600/20 px-1.5 py-0.5 text-[10px] font-semibold text-brand-400">
+                SUPER
+              </span>
+            )}
+          </div>
           <Link
             to={`/${detectLocale()}`}
             className="block rounded-lg px-4 py-2 text-xs font-semibold text-ink-400 hover:bg-ink-800 hover:text-white"
@@ -132,11 +154,3 @@ export function AdminPageHeader({
   )
 }
 
-export function DemoNotice() {
-  const { t } = useTranslation()
-  return (
-    <p className="mb-6 rounded-lg border border-amber-500/25 bg-amber-500/5 px-4 py-3 text-xs text-amber-200/80">
-      {t('admin.demoNotice')}
-    </p>
-  )
-}

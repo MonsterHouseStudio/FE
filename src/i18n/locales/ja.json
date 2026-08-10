@@ -252,7 +252,7 @@
     "password": "パスワード",
     "loginCta": "ログイン",
     "logout": "ログアウト",
-    "loginHint": "デモ環境です。任意の値でログインできます。",
+    "loginHint": "管理者アカウントでログインしてください。5回連続で失敗すると15分間ロックされます。",
     "dashboard": "ダッシュボード",
     "products": "撮影プラン",
     "bookings": "予約管理",
@@ -293,8 +293,7 @@
     "closeTime": "閉店",
     "dayOff": "休業",
     "specialDay": "特別営業",
-    "weekday": "曜日",
-    "demoNotice": "モックデータで動作する画面です。実際の保存はバックエンド連携後に動作します。"
+    "weekday": "曜日"
   },
   "days": {
     "mon": "月",

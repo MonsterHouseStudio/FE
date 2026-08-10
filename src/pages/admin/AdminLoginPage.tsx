@@ -12,14 +12,27 @@ export default function AdminLoginPage() {
   const { token, login } = useAdminAuth()
   const [username, setUsername] = useState('admin')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [pending, setPending] = useState(false)
 
   if (token) return <Navigate to="/admin" replace />
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!username.trim()) return
-    login(username.trim())
-    navigate('/admin', { replace: true })
+    if (!username.trim() || pending) return
+
+    setError(null)
+    setPending(true)
+    try {
+      await login(username.trim(), password)
+      navigate('/admin', { replace: true })
+    } catch (err) {
+      // 서버가 아이디/비밀번호를 구분해서 알려주지 않습니다 (계정 존재 여부 노출 방지).
+      // 잠금 상태(A004)처럼 안내가 필요한 경우는 서버 메시지를 그대로 씁니다.
+      setError(err instanceof Error ? err.message : '로그인에 실패했습니다.')
+    } finally {
+      setPending(false)
+    }
   }
 
   return (
@@ -59,8 +72,17 @@ export default function AdminLoginPage() {
             />
           </div>
 
-          <Button type="submit" size="lg" className="w-full">
-            {t('admin.loginCta')}
+          {error && (
+            <p
+              role="alert"
+              className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs leading-relaxed text-red-300"
+            >
+              {error}
+            </p>
+          )}
+
+          <Button type="submit" size="lg" className="w-full" disabled={pending}>
+            {pending ? '로그인 중…' : t('admin.loginCta')}
           </Button>
 
           <p className="text-center text-[11px] leading-relaxed text-ink-600">

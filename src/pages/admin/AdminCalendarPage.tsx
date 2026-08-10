@@ -1,25 +1,26 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ADMIN_BOOKINGS } from '@/mocks/admin'
+import { useAsync } from '@/hooks/useAsync'
+import { adminApi } from '@/lib/api'
 import { cn, formatTime, toDateKey } from '@/lib/utils'
-import { BOOKING_POLICY } from '@/lib/bookingPolicy'
+import type { Booking, Weekday } from '@/types'
 import { Badge } from '@/components/ui/primitives'
-import { Button } from '@/components/ui/Button'
-import { AdminPageHeader, DemoNotice } from './AdminLayout'
+import { AdminPageHeader } from './AdminLayout'
+import { AsyncBoundary } from './AsyncBoundary'
 import { STATUS_TONE } from './statusTone'
 
 const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const
 
-/** 기본 영업시간 — 백엔드 availability 테이블에 대응 */
-const DEFAULT_HOURS = [
-  { day: 'sun', open: '10:00', close: '20:00', active: true },
-  { day: 'mon', open: '10:00', close: '20:00', active: false },
-  { day: 'tue', open: '10:00', close: '20:00', active: true },
-  { day: 'wed', open: '10:00', close: '20:00', active: true },
-  { day: 'thu', open: '10:00', close: '20:00', active: true },
-  { day: 'fri', open: '10:00', close: '20:00', active: true },
-  { day: 'sat', open: '10:00', close: '20:00', active: true },
-] as const
+/** 화면은 일요일 시작, 백엔드 DayOfWeek 는 월요일 시작이라 매핑이 필요합니다. */
+const WEEKDAY_OF: Record<(typeof DAY_KEYS)[number], Weekday> = {
+  sun: 'SUNDAY',
+  mon: 'MONDAY',
+  tue: 'TUESDAY',
+  wed: 'WEDNESDAY',
+  thu: 'THURSDAY',
+  fri: 'FRIDAY',
+  sat: 'SATURDAY',
+}
 
 export default function AdminCalendarPage() {
   const { t } = useTranslation()
@@ -28,39 +29,57 @@ export default function AdminCalendarPage() {
     return new Date(d.getFullYear(), d.getMonth(), 1)
   })
 
+  const year = cursor.getFullYear()
+  const month = cursor.getMonth()
+  const from = toDateKey(new Date(year, month, 1))
+  const to = toDateKey(new Date(year, month + 1, 0))
+
+  const bookings = useAsync(() => adminApi.getCalendar(from, to), [from, to])
+  const availability = useAsync(() => adminApi.getAvailability(), [])
+
   const bookingsByDate = useMemo(() => {
-    const map = new Map<string, typeof ADMIN_BOOKINGS>()
-    ADMIN_BOOKINGS.filter((b) => b.status !== 'CANCELED').forEach((b) => {
-      const key = b.startAt.slice(0, 10)
-      map.set(key, [...(map.get(key) ?? []), b])
-    })
+    const map = new Map<string, Booking[]>()
+    // 취소 건은 달력에서 뺍니다. 사장님이 봐야 하는 건 "실제로 잡혀 있는 일정"입니다.
+    ;(bookings.data ?? [])
+      .filter((b) => b.status !== 'CANCELED')
+      .forEach((b) => {
+        const key = b.startAt.slice(0, 10)
+        map.set(key, [...(map.get(key) ?? []), b])
+      })
     return map
-  }, [])
+  }, [bookings.data])
+
+  /** 요일별 휴무 판정 — 하드코딩된 정기휴무 대신 실제 availability 를 씁니다. */
+  const closedWeekdays = useMemo(() => {
+    const set = new Set<number>()
+    ;(availability.data ?? []).forEach((row) => {
+      if (row.active) return
+      const idx = DAY_KEYS.findIndex((k) => WEEKDAY_OF[k] === row.dayOfWeek)
+      if (idx >= 0) set.add(idx)
+    })
+    return set
+  }, [availability.data])
 
   const cells = useMemo(() => {
-    const year = cursor.getFullYear()
-    const month = cursor.getMonth()
     const first = new Date(year, month, 1)
     const last = new Date(year, month + 1, 0)
-
     const list: (Date | null)[] = Array.from({ length: first.getDay() }, () => null)
     for (let d = 1; d <= last.getDate(); d++) list.push(new Date(year, month, d))
     return list
-  }, [cursor])
+  }, [year, month])
 
-  const move = (delta: number) =>
-    setCursor((c) => new Date(c.getFullYear(), c.getMonth() + delta, 1))
+  const move = (delta: number) => setCursor((c) => new Date(c.getFullYear(), c.getMonth() + delta, 1))
+
+  const monthBookings = bookings.data ?? []
 
   return (
     <>
       <AdminPageHeader
         title={t('admin.calendar')}
-        action={<Button size="sm">+ {t('admin.specialDay')}</Button>}
+        desc={`이 달 예약 ${monthBookings.filter((b) => b.status !== 'CANCELED').length}건`}
       />
-      <DemoNotice />
 
       <div className="grid gap-6 xl:grid-cols-[1fr_300px] xl:items-start">
-        {/* 월간 캘린더 */}
         <div className="surface p-5 sm:p-7">
           <div className="flex items-center justify-between">
             <button
@@ -71,7 +90,7 @@ export default function AdminCalendarPage() {
               ‹
             </button>
             <div className="font-display text-lg tracking-tightest text-white">
-              {cursor.getFullYear()}년 {cursor.getMonth() + 1}월
+              {year}년 {month + 1}월
             </div>
             <button
               type="button"
@@ -82,7 +101,24 @@ export default function AdminCalendarPage() {
             </button>
           </div>
 
-          <div className="mt-6 grid grid-cols-7 gap-1.5">
+          {bookings.error && (
+            <p
+              role="alert"
+              className="mt-5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-xs text-red-300"
+            >
+              {bookings.error}{' '}
+              <button type="button" onClick={bookings.reload} className="underline">
+                다시 시도
+              </button>
+            </p>
+          )}
+
+          <div
+            className={cn(
+              'mt-6 grid grid-cols-7 gap-1.5 transition-opacity',
+              bookings.loading && 'opacity-50',
+            )}
+          >
             {DAY_KEYS.map((day, i) => (
               <div
                 key={day}
@@ -100,7 +136,7 @@ export default function AdminCalendarPage() {
 
               const key = toDateKey(date)
               const dayBookings = bookingsByDate.get(key) ?? []
-              const closed = date.getDay() === BOOKING_POLICY.closedWeekday
+              const closed = closedWeekdays.has(date.getDay())
               const isToday = key === toDateKey(new Date())
 
               return (
@@ -125,16 +161,14 @@ export default function AdminCalendarPage() {
                       {date.getDate()}
                     </span>
                     {closed && (
-                      <span className="text-[9px] uppercase text-ink-700">
-                        {t('admin.dayOff')}
-                      </span>
+                      <span className="text-[9px] uppercase text-ink-700">{t('admin.dayOff')}</span>
                     )}
                   </div>
 
                   <div className="mt-1.5 space-y-1">
                     {dayBookings.slice(0, 2).map((b) => (
                       <div
-                        key={b.id}
+                        key={b.bookingCode}
                         className="truncate rounded bg-brand-600/20 px-1.5 py-0.5 text-[10px] text-brand-200"
                         title={`${b.name} · ${b.productName}`}
                       >
@@ -153,29 +187,39 @@ export default function AdminCalendarPage() {
           </div>
         </div>
 
-        {/* 요일별 영업시간 */}
         <aside className="surface p-6">
           <h2 className="text-[11px] font-bold uppercase tracking-[0.2em] text-ink-500">
             {t('admin.weekday')}
           </h2>
 
-          <ul className="mt-5 space-y-2.5">
-            {DEFAULT_HOURS.map((row) => (
-              <li
-                key={row.day}
-                className="flex items-center justify-between gap-3 rounded-lg border border-ink-800 px-4 py-3"
-              >
-                <span className="text-sm font-semibold text-white">{t(`days.${row.day}`)}</span>
-                {row.active ? (
-                  <span className="text-xs text-ink-300">
-                    {row.open} – {row.close}
-                  </span>
-                ) : (
-                  <Badge tone="danger">{t('admin.dayOff')}</Badge>
-                )}
-              </li>
-            ))}
-          </ul>
+          <AsyncBoundary
+            loading={availability.loading}
+            error={availability.error}
+            onRetry={availability.reload}
+          >
+            <ul className="mt-5 space-y-2.5">
+              {DAY_KEYS.map((day) => {
+                const row = (availability.data ?? []).find(
+                  (a) => a.dayOfWeek === WEEKDAY_OF[day],
+                )
+                return (
+                  <li
+                    key={day}
+                    className="flex items-center justify-between gap-3 rounded-lg border border-ink-800 px-4 py-3"
+                  >
+                    <span className="text-sm font-semibold text-white">{t(`days.${day}`)}</span>
+                    {row?.active && row.openTime && row.closeTime ? (
+                      <span className="text-xs text-ink-300">
+                        {row.openTime} – {row.closeTime}
+                      </span>
+                    ) : (
+                      <Badge tone="danger">{t('admin.dayOff')}</Badge>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          </AsyncBoundary>
 
           <div className="mt-6 border-t border-ink-800 pt-5">
             <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-ink-500">
@@ -188,7 +232,7 @@ export default function AdminCalendarPage() {
                     {t(`admin.status${s.charAt(0) + s.slice(1).toLowerCase()}`)}
                   </Badge>
                   <span className="text-ink-500">
-                    {ADMIN_BOOKINGS.filter((b) => b.status === s).length}
+                    {monthBookings.filter((b) => b.status === s).length}
                   </span>
                 </li>
               ))}
