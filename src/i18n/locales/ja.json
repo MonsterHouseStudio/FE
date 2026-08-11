@@ -293,7 +293,8 @@
     "closeTime": "閉店",
     "dayOff": "休業",
     "specialDay": "特別営業",
-    "weekday": "曜日"
+    "weekday": "曜日",
+    "posts": "記事管理"
   },
   "days": {
     "mon": "月",

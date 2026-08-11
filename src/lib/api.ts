@@ -4,21 +4,31 @@ import type {
   AdminCompetition,
   AdminGalleryItem,
   AdminInquiry,
+  AdminPost,
   AdminProduct,
   ApiResponse,
   Availability,
+  AvailabilityOverride,
+  AvailabilityOverridePayload,
   Booking,
   BookingCreatePayload,
   BookingStatus,
   Competition,
   DailySlots,
+  CompetitionSavePayload,
   DashboardSummary,
   GalleryItem,
+  GallerySavePayload,
   InquiryCreatePayload,
   InquiryStatus,
   PageResponse,
   Post,
+  PostSavePayload,
   Product,
+  ProductOptionSavePayload,
+  ProductSavePayload,
+  UploadedImage,
+  Weekday,
 } from '@/types'
 import { COMPETITIONS, POSTS, PRODUCTS, galleryItems } from '@/mocks/data'
 import { currentAccessToken, refreshAccessToken } from '@/store/adminAuth'
@@ -277,12 +287,19 @@ export const api = {
 async function adminRequest<T>(path: string, init?: RequestInit, retry = true): Promise<T> {
   const token = currentAccessToken()
 
+  // ★ 파일 업로드(FormData)일 때는 Content-Type 을 직접 넣으면 안 됩니다.
+  //   multipart 는 헤더에 경계 문자열(boundary)이 들어가야 하는데,
+  //   'application/json' 으로 덮어쓰면 서버가 본문을 파싱하지 못해
+  //   "Required part 'file' is not present" 로 실패합니다.
+  //   비워두면 브라우저가 boundary 를 포함해 알아서 채웁니다.
+  const isMultipart = init?.body instanceof FormData
+
   const res = await fetch(`${BASE_URL}${path}`, {
     ...init,
     // 재발급 요청에 리프레시 쿠키가 실려야 합니다.
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
+      ...(isMultipart ? {} : { 'Content-Type': 'application/json' }),
       // 관리자 화면은 한국어 고정입니다 (사장님이 보는 화면).
       'X-Locale': 'ko',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -362,22 +379,108 @@ export const adminApi = {
   reopenInquiry: (id: number) =>
     adminRequest<AdminInquiry>(`/admin/inquiries/${id}/pending`, { method: 'POST' }),
 
+  // ----- 이미지 업로드 -----
+  /**
+   * ★ Content-Type 을 직접 지정하면 안 됩니다.
+   *   multipart 는 경계 문자열(boundary)이 헤더에 들어가야 하는데,
+   *   'application/json' 을 덮어써 버리면 서버가 본문을 파싱하지 못합니다.
+   *   FormData 를 넘기면 브라우저가 boundary 를 포함해 알아서 채웁니다.
+   */
+  uploadImage: (file: File, directory: 'gallery' | 'post' | 'product') => {
+    const form = new FormData()
+    form.append('file', file)
+    return adminRequest<UploadedImage>(`/admin/uploads/images${query({ directory })}`, {
+      method: 'POST',
+      body: form,
+    })
+  },
+
   // ----- 상품 -----
   getProducts: () => adminRequest<AdminProduct[]>('/admin/products'),
+
+  createProduct: (payload: ProductSavePayload) =>
+    adminRequest<AdminProduct>('/admin/products', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  updateProduct: (id: number, payload: ProductSavePayload) =>
+    adminRequest<AdminProduct>(`/admin/products/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+
+  deleteProduct: (id: number) => adminRequest<void>(`/admin/products/${id}`, { method: 'DELETE' }),
 
   setProductActive: (id: number, active: boolean) =>
     adminRequest<AdminProduct>(`/admin/products/${id}/active${query({ active: String(active) })}`, {
       method: 'PATCH',
     }),
 
+  addProductOption: (productId: number, payload: ProductOptionSavePayload) =>
+    adminRequest<AdminProduct>(`/admin/products/${productId}/options`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  updateProductOption: (productId: number, optionId: number, payload: ProductOptionSavePayload) =>
+    adminRequest<AdminProduct>(`/admin/products/${productId}/options/${optionId}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+
+  deleteProductOption: (productId: number, optionId: number) =>
+    adminRequest<void>(`/admin/products/${productId}/options/${optionId}`, { method: 'DELETE' }),
+
   // ----- 대회 일정 -----
   getCompetitions: () => adminRequest<AdminCompetition[]>('/admin/competitions'),
+
+  createCompetition: (payload: CompetitionSavePayload) =>
+    adminRequest<AdminCompetition>('/admin/competitions', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  updateCompetition: (id: number, payload: CompetitionSavePayload) =>
+    adminRequest<AdminCompetition>(`/admin/competitions/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
 
   deleteCompetition: (id: number) =>
     adminRequest<void>(`/admin/competitions/${id}`, { method: 'DELETE' }),
 
+  // ----- 미디어 글 -----
+  getPosts: () => adminRequest<AdminPost[]>('/admin/posts'),
+
+  createPost: (payload: PostSavePayload) =>
+    adminRequest<AdminPost>('/admin/posts', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  updatePost: (id: number, payload: PostSavePayload) =>
+    adminRequest<AdminPost>(`/admin/posts/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+
+  deletePost: (id: number) => adminRequest<void>(`/admin/posts/${id}`, { method: 'DELETE' }),
+
   // ----- 갤러리 -----
   getGallery: () => adminRequest<AdminGalleryItem[]>('/admin/gallery'),
+
+  createGalleryItem: (payload: GallerySavePayload) =>
+    adminRequest<AdminGalleryItem>('/admin/gallery', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  updateGalleryItem: (id: number, payload: GallerySavePayload) =>
+    adminRequest<AdminGalleryItem>(`/admin/gallery/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
 
   setGalleryConsent: (id: number, consent: boolean, consentNote?: string) =>
     adminRequest<AdminGalleryItem>(`/admin/gallery/${id}/consent`, {
@@ -391,9 +494,30 @@ export const adminApi = {
   // ----- 영업시간 -----
   getAvailability: () => adminRequest<Availability[]>('/admin/availability'),
 
-  saveAvailability: (items: Availability[]) =>
-    adminRequest<Availability[]>('/admin/availability', {
+  /**
+   * ⚠ 서버는 요일 하나씩 받습니다 (AvailabilityUpsertRequest 단건).
+   *   배열로 보내면 400 입니다. 화면에서 요일별로 각각 호출하세요.
+   */
+  saveAvailability: (payload: {
+    dayOfWeek: Weekday
+    openTime: string
+    closeTime: string
+    active: boolean
+  }) =>
+    adminRequest<Availability>('/admin/availability', {
       method: 'PUT',
-      body: JSON.stringify(items),
+      body: JSON.stringify(payload),
     }),
+
+  getOverrides: (from: string, to: string) =>
+    adminRequest<AvailabilityOverride[]>(`/admin/availability/overrides${query({ from, to })}`),
+
+  saveOverride: (payload: AvailabilityOverridePayload) =>
+    adminRequest<AvailabilityOverride>('/admin/availability/overrides', {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+
+  deleteOverride: (id: number) =>
+    adminRequest<void>(`/admin/availability/overrides/${id}`, { method: 'DELETE' }),
 }

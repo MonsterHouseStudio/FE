@@ -281,6 +281,105 @@ export interface AdminCompetition {
   missingLocales: ServerLocale[]
 }
 
+/** 업로드 응답 — 원본·중간·썸네일 3벌의 key 와 URL 을 함께 돌려줍니다. */
+export interface UploadedImage {
+  originalKey: string
+  mediumKey: string
+  thumbKey: string
+  originalUrl: string
+  mediumUrl: string
+  thumbUrl: string
+  width: number
+  height: number
+  ratio: 'portrait' | 'landscape' | 'square'
+}
+
+/**
+ * 저장 요청 DTO들.
+ *
+ * ★ 응답 타입을 그대로 재사용하지 않는 이유
+ *   응답에는 id·URL·missingLocales 처럼 서버가 만들어주는 값이 섞여 있습니다.
+ *   그걸 그대로 되돌려 보내면 서버가 무시하거나 검증에서 걸립니다.
+ *   보내는 것과 받는 것을 분리해야 "무엇이 편집 가능한가"가 타입에 드러납니다.
+ */
+export interface ProductSavePayload {
+  type: ProductType
+  nameKo: string
+  nameJa: string
+  descriptionKo: string
+  descriptionJa: string
+  durationMin: number
+  price: number
+  includesKo: string[]
+  includesJa: string[]
+  sortOrder: number
+  priceUnit: PriceUnit
+  bookable: boolean
+  noteKo: string
+  noteJa: string
+}
+
+export interface ProductOptionSavePayload {
+  nameKo: string
+  nameJa: string
+  price: number
+  maxQuantity: number
+  sortOrder: number
+  active: boolean
+}
+
+export interface GallerySavePayload {
+  category: GalleryCategory
+  imageKey: string
+  thumbKey: string
+  ratio: string
+  takenAt: string | null
+  consent: boolean
+  consentNote: string
+  sortOrder: number
+  translations: { locale: ServerLocale; caption: string }[]
+}
+
+export interface CompetitionSavePayload {
+  country: Country
+  startDate: string
+  endDate: string
+  link: string
+  published: boolean
+  translations: CompetitionTranslation[]
+}
+
+export type PostCategory = 'MEDIA' | 'NOTICE'
+
+export interface PostTranslation {
+  locale: ServerLocale
+  series: string
+  title: string
+  excerpt: string
+  body: string
+}
+
+export interface AdminPost {
+  id: number
+  slug: string
+  category: PostCategory
+  thumbnailKey: string | null
+  thumbnailUrl: string | null
+  published: boolean
+  publishedAt: string | null
+  viewCount: number
+  translations: PostTranslation[]
+  missingLocales: ServerLocale[]
+}
+
+export interface PostSavePayload {
+  slug: string
+  category: PostCategory
+  thumbnailKey: string
+  published: boolean
+  translations: PostTranslation[]
+}
+
 export type Weekday =
   | 'MONDAY'
   | 'TUESDAY'
@@ -298,6 +397,26 @@ export interface Availability {
   closeTime: string | null
   /** false 면 그 요일은 휴무입니다 */
   active: boolean
+}
+
+/** 요일 기본값을 덮어쓰는 특정 날짜 예외 */
+export type OverrideType = 'HOLIDAY' | 'SPECIAL'
+
+export interface AvailabilityOverride {
+  id: number
+  date: string
+  type: OverrideType
+  openTime: string | null
+  closeTime: string | null
+  memo: string | null
+}
+
+export interface AvailabilityOverridePayload {
+  date: string
+  type: OverrideType
+  openTime: string | null
+  closeTime: string | null
+  memo: string
 }
 
 export interface DashboardSummary {

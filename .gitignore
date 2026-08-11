@@ -14,3 +14,6 @@ yarn-error.log*
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# tsc -b 의 증분 빌드 캐시. 빌드할 때마다 바뀌어 커밋 노이즈만 만듭니다.
+*.tsbuildinfo

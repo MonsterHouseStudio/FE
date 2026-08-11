@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: 타입 검사 · 빌드
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node 22 설치
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          # package-lock.json 기준으로 node_modules 를 캐싱합니다.
+          cache: npm
+
+      # install 이 아니라 ci 입니다.
+      # ci 는 package-lock.json 을 그대로 설치하고, lock 과 package.json 이
+      # 어긋나면 실패합니다. 로컬과 CI 가 다른 버전을 쓰는 사고를 막습니다.
+      - name: 의존성 설치
+        run: npm ci
+
+      # ★ 이 단계가 오늘 실제로 버그를 잡았습니다.
+      #   백엔드는 locale 을 "KO"/"JA" 로 내려주는데 프론트가 'ko'/'ja' 로 비교해
+      #   한국 대회에 일본어 제목이 뜨던 문제입니다.
+      #   화면이 깨지지 않아서 눈으로는 못 찾고, 타입 검사가 5곳을 정확히 짚었습니다.
+      - name: 타입 검사
+        run: npm run lint
+
+      - name: 프로덕션 빌드
+        run: npm run build
+
+  docker:
+    name: 이미지 빌드
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ⚠ Vite 는 VITE_* 를 빌드 시점에 번들에 박습니다.
+      #   운영 배포용 이미지를 만들 때 VITE_USE_MOCK 을 빠뜨리면
+      #   목 데이터가 그대로 나가므로 여기서도 명시적으로 넣어 확인합니다.
+      - name: Dockerfile 검증
+        run: |
+          docker build -t monsterhouse/frontend:ci \
+            --build-arg VITE_USE_MOCK=false \
+            --build-arg VITE_API_BASE_URL=/api \
+            .

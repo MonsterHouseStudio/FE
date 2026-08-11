@@ -3,10 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { useAsync } from '@/hooks/useAsync'
 import { adminApi } from '@/lib/api'
 import { cn, formatTime, toDateKey } from '@/lib/utils'
-import type { Booking, Weekday } from '@/types'
+import type { AvailabilityOverride, Booking, Weekday } from '@/types'
 import { Badge } from '@/components/ui/primitives'
+import { Button } from '@/components/ui/Button'
 import { AdminPageHeader } from './AdminLayout'
 import { AsyncBoundary } from './AsyncBoundary'
+import { OverrideBadge, OverrideModal, WeeklyHoursModal } from './AvailabilityEditor'
 import { STATUS_TONE } from './statusTone'
 
 const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const
@@ -36,6 +38,17 @@ export default function AdminCalendarPage() {
 
   const bookings = useAsync(() => adminApi.getCalendar(from, to), [from, to])
   const availability = useAsync(() => adminApi.getAvailability(), [])
+  const overrides = useAsync(() => adminApi.getOverrides(from, to), [from, to])
+
+  const [editingHours, setEditingHours] = useState(false)
+  const [editingDate, setEditingDate] = useState<string | null>(null)
+
+  /** 날짜별 예외를 빠르게 찾기 위한 색인 */
+  const overrideByDate = useMemo(() => {
+    const map = new Map<string, AvailabilityOverride>()
+    ;(overrides.data ?? []).forEach((o) => map.set(o.date, o))
+    return map
+  }, [overrides.data])
 
   const bookingsByDate = useMemo(() => {
     const map = new Map<string, Booking[]>()
@@ -76,7 +89,12 @@ export default function AdminCalendarPage() {
     <>
       <AdminPageHeader
         title={t('admin.calendar')}
-        desc={`이 달 예약 ${monthBookings.filter((b) => b.status !== 'CANCELED').length}건`}
+        desc={`이 달 예약 ${monthBookings.filter((b) => b.status !== 'CANCELED').length}건 · 날짜를 누르면 휴무·특별영업을 지정할 수 있습니다`}
+        action={
+          <Button size="sm" variant="outline" onClick={() => setEditingHours(true)}>
+            요일별 영업시간
+          </Button>
+        }
       />
 
       <div className="grid gap-6 xl:grid-cols-[1fr_300px] xl:items-start">
@@ -136,18 +154,26 @@ export default function AdminCalendarPage() {
 
               const key = toDateKey(date)
               const dayBookings = bookingsByDate.get(key) ?? []
-              const closed = closedWeekdays.has(date.getDay())
+              const override = overrideByDate.get(key)
+              // 날짜 예외가 요일 기본값을 덮어씁니다 (SlotService.resolveBusinessHours 와 같은 규칙).
+              const closed =
+                override?.type === 'HOLIDAY' ||
+                (!override && closedWeekdays.has(date.getDay()))
               const isToday = key === toDateKey(new Date())
 
               return (
-                <div
+                <button
+                  type="button"
                   key={key}
+                  onClick={() => setEditingDate(key)}
+                  title="클릭해서 휴무·특별영업 지정"
                   className={cn(
-                    'min-h-[92px] rounded-lg border p-2 transition-colors',
+                    'min-h-[92px] rounded-lg border p-2 text-left transition-colors',
                     closed
                       ? 'border-ink-800 bg-ink-950/60'
                       : 'border-ink-800 bg-ink-900/40 hover:border-brand-700',
                     isToday && 'border-brand-600',
+                    override && 'ring-1 ring-brand-700/50',
                   )}
                 >
                   <div className="flex items-center justify-between">
@@ -160,8 +186,14 @@ export default function AdminCalendarPage() {
                     >
                       {date.getDate()}
                     </span>
-                    {closed && (
-                      <span className="text-[9px] uppercase text-ink-700">{t('admin.dayOff')}</span>
+                    {override ? (
+                      <OverrideBadge override={override} />
+                    ) : (
+                      closed && (
+                        <span className="text-[9px] uppercase text-ink-700">
+                          {t('admin.dayOff')}
+                        </span>
+                      )
                     )}
                   </div>
 
@@ -181,7 +213,7 @@ export default function AdminCalendarPage() {
                       </div>
                     )}
                   </div>
-                </div>
+                </button>
               )
             })}
           </div>
@@ -240,6 +272,31 @@ export default function AdminCalendarPage() {
           </div>
         </aside>
       </div>
+
+      {editingHours && (
+        <WeeklyHoursModal
+          week={availability.data ?? []}
+          onClose={() => setEditingHours(false)}
+          onSaved={() => {
+            setEditingHours(false)
+            availability.reload()
+            // 영업시간이 바뀌면 휴무 표시가 달라지므로 달력도 다시 그립니다.
+            bookings.reload()
+          }}
+        />
+      )}
+
+      {editingDate && (
+        <OverrideModal
+          date={editingDate}
+          existing={overrideByDate.get(editingDate) ?? null}
+          onClose={() => setEditingDate(null)}
+          onSaved={() => {
+            setEditingDate(null)
+            overrides.reload()
+          }}
+        />
+      )}
     </>
   )
 }

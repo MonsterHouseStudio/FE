@@ -293,7 +293,8 @@
     "closeTime": "마감",
     "dayOff": "휴무",
     "specialDay": "특별 영업",
-    "weekday": "요일"
+    "weekday": "요일",
+    "posts": "미디어 글"
   },
   "days": {
     "mon": "월",
