@@ -295,6 +295,17 @@ export interface UploadedImage {
 }
 
 /**
+ * 영상은 리사이즈·변환을 하지 않아 산출물이 하나뿐입니다.
+ * (서버 인코딩에 ffmpeg 가 필요한데 배너 하나를 위해 감수할 비용이 아닙니다)
+ */
+export interface UploadedVideo {
+  key: string
+  url: string
+  bytes: number
+  contentType: string
+}
+
+/**
  * 저장 요청 DTO들.
  *
  * ★ 응답 타입을 그대로 재사용하지 않는 이유
@@ -399,6 +410,47 @@ export interface AdminUserCreatePayload {
 export interface PasswordChangePayload {
   currentPassword: string
   newPassword: string
+}
+
+export type BannerMediaType = 'IMAGE' | 'VIDEO'
+
+/** 고객 화면용 — 서버가 요청 언어로 이미 골라준 문구가 옵니다. */
+export interface Banner {
+  id: number
+  mediaType: BannerMediaType
+  mediaUrl: string
+  /** VIDEO 일 때 자동재생 실패·로딩 중에 보여줄 이미지 */
+  posterUrl: string | null
+  headline: string | null
+  subtext: string | null
+}
+
+/** 관리자용 — key 와 URL 을 함께 받습니다(수정 시 key 를 그대로 돌려보내야 함). */
+export interface AdminBanner {
+  id: number
+  mediaType: BannerMediaType
+  mediaKey: string
+  mediaUrl: string
+  posterKey: string | null
+  posterUrl: string | null
+  headlineKo: string | null
+  headlineJa: string | null
+  subtextKo: string | null
+  subtextJa: string | null
+  active: boolean
+  sortOrder: number
+}
+
+export interface BannerSavePayload {
+  mediaType: BannerMediaType
+  mediaKey: string
+  posterKey: string
+  headlineKo: string
+  headlineJa: string
+  subtextKo: string
+  subtextJa: string
+  active: boolean
+  sortOrder: number
 }
 
 export type Weekday =

@@ -29,6 +29,14 @@ export default function HomePage() {
     queryKey: ['posts', locale],
     queryFn: () => api.getPosts(locale),
   })
+  const { data: banners } = useQuery({
+    queryKey: ['banners', locale],
+    queryFn: () => api.getBanners(locale),
+  })
+
+  // 지금은 첫 배너만 씁니다. 여러 개를 슬라이드로 돌리는 건 다음 단계입니다.
+  // 등록된 배너가 없으면 undefined 이고, 히어로는 기존 그라디언트로 돌아갑니다.
+  const banner = banners?.[0]
 
   const upcoming = (competitions ?? [])
     .filter((c) => daysUntil(c.startDate) >= 0)
@@ -39,25 +47,62 @@ export default function HomePage() {
     <>
       {/* ============ HERO ============ */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-950 via-ink-950 to-black" />
-        <div className="absolute -right-24 top-1/2 -translate-y-1/2 text-brand-900/40">
-          <LogoMark className="h-[520px] w-[520px]" />
-        </div>
-        <div
-          className="absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage:
-              'repeating-linear-gradient(120deg, #fff 0 1px, transparent 1px 14px)',
-          }}
-        />
+        {banner ? (
+          <>
+            {banner.mediaType === 'VIDEO' ? (
+              /*
+               * muted + playsInline + autoPlay 세 개가 모두 있어야 자동재생됩니다.
+               * 하나라도 빠지면 모바일에서 재생되지 않습니다(특히 iOS).
+               * poster 는 재생 전·실패 시 대체 화면입니다 — 서버가 필수로 강제합니다.
+               */
+              <video
+                src={banner.mediaUrl}
+                poster={banner.posterUrl ?? undefined}
+                muted
+                loop
+                autoPlay
+                playsInline
+                // 배경 장식이라 스크린리더가 읽을 필요가 없습니다.
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <img
+                src={banner.mediaUrl}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            )}
+            {/*
+             * 어두운 덮개가 없으면 밝은 영상 위에서 흰 글씨가 안 읽힙니다.
+             * 사장님이 어떤 영상을 올릴지 모르므로 항상 깔아둡니다.
+             */}
+            <div className="absolute inset-0 bg-gradient-to-br from-black/75 via-black/60 to-black/80" />
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-950 via-ink-950 to-black" />
+            <div className="absolute -right-24 top-1/2 -translate-y-1/2 text-brand-900/40">
+              <LogoMark className="h-[520px] w-[520px]" />
+            </div>
+            <div
+              className="absolute inset-0 opacity-[0.05]"
+              style={{
+                backgroundImage:
+                  'repeating-linear-gradient(120deg, #fff 0 1px, transparent 1px 14px)',
+              }}
+            />
+          </>
+        )}
 
         <div className="container-mh relative py-24 sm:py-36 lg:py-44">
           <p className="eyebrow animate-fade-in">{t('home.heroEyebrow')}</p>
           <h1 className="heading-xl mt-6 max-w-3xl whitespace-pre-line text-white animate-fade-up">
-            {t('home.heroTitle')}
+            {banner?.headline || t('home.heroTitle')}
           </h1>
           <p className="mt-7 max-w-xl text-sm leading-relaxed text-ink-300 sm:text-base animate-fade-up">
-            {t('home.heroDesc')}
+            {banner?.subtext || t('home.heroDesc')}
           </p>
           <div className="mt-10 flex flex-wrap gap-3 animate-fade-up">
             <ButtonLink to={lp('/shooting/booking')} size="lg">

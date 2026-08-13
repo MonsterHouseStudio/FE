@@ -1,5 +1,6 @@
 import type { Locale } from '@/i18n'
 import type {
+  AdminBanner,
   AdminBooking,
   AdminCompetition,
   AdminGalleryItem,
@@ -10,6 +11,8 @@ import type {
   AdminUserCreatePayload,
   ApiResponse,
   Availability,
+  Banner,
+  BannerSavePayload,
   AvailabilityOverride,
   AvailabilityOverridePayload,
   Booking,
@@ -31,6 +34,7 @@ import type {
   ProductOptionSavePayload,
   ProductSavePayload,
   UploadedImage,
+  UploadedVideo,
   Weekday,
 } from '@/types'
 import { COMPETITIONS, POSTS, PRODUCTS, galleryItems } from '@/mocks/data'
@@ -217,6 +221,16 @@ export const api = {
     return COMPETITIONS[locale]
   },
 
+  /**
+   * 홈 히어로 배너. 등록된 게 없으면 빈 배열이고, 화면은 기본 그라디언트로 돌아갑니다.
+   * 목 모드에서는 배너를 흉내내지 않습니다 — 기본 화면이 곧 "배너 없음" 상태라
+   * 가짜 배너를 만들면 오히려 실제와 달라집니다.
+   */
+  async getBanners(locale: Locale): Promise<Banner[]> {
+    if (USE_MOCK) return []
+    return request<Banner[]>('/banners', locale)
+  },
+
   async getGallery(locale: Locale): Promise<GalleryItem[]> {
     if (!USE_MOCK) return request<GalleryItem[]>('/gallery', locale)
     await delay(200)
@@ -389,7 +403,7 @@ export const adminApi = {
    *   'application/json' 을 덮어써 버리면 서버가 본문을 파싱하지 못합니다.
    *   FormData 를 넘기면 브라우저가 boundary 를 포함해 알아서 채웁니다.
    */
-  uploadImage: (file: File, directory: 'gallery' | 'post' | 'product') => {
+  uploadImage: (file: File, directory: 'gallery' | 'post' | 'product' | 'banner') => {
     const form = new FormData()
     form.append('file', file)
     return adminRequest<UploadedImage>(`/admin/uploads/images${query({ directory })}`, {
@@ -493,6 +507,38 @@ export const adminApi = {
 
   deleteGalleryItem: (id: number) =>
     adminRequest<void>(`/admin/gallery/${id}`, { method: 'DELETE' }),
+
+  // ----- 배너 -----
+  getBanners: () => adminRequest<AdminBanner[]>('/admin/banners'),
+
+  createBanner: (payload: BannerSavePayload) =>
+    adminRequest<AdminBanner>('/admin/banners', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  updateBanner: (id: number, payload: BannerSavePayload) =>
+    adminRequest<AdminBanner>(`/admin/banners/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+
+  setBannerActive: (id: number, active: boolean) =>
+    adminRequest<AdminBanner>(`/admin/banners/${id}/active${query({ active: String(active) })}`, {
+      method: 'PATCH',
+    }),
+
+  deleteBanner: (id: number) => adminRequest<void>(`/admin/banners/${id}`, { method: 'DELETE' }),
+
+  /** 배너 배경 영상. MP4 만 받습니다(서버가 ftyp 매직바이트까지 검사). */
+  uploadVideo: (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return adminRequest<UploadedVideo>('/admin/uploads/videos', {
+      method: 'POST',
+      body: form,
+    })
+  },
 
   // ----- 관리자 계정 -----
   // 목록·생성·비활성화는 SUPER_ADMIN 전용입니다 (@PreAuthorize).
