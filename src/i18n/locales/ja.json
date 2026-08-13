@@ -294,7 +294,8 @@
     "dayOff": "休業",
     "specialDay": "特別営業",
     "weekday": "曜日",
-    "posts": "記事管理"
+    "posts": "記事管理",
+    "users": "管理者アカウント"
   },
   "days": {
     "mon": "月",

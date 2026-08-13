@@ -24,6 +24,7 @@ import AdminBookingsPage from '@/pages/admin/AdminBookingsPage'
 import AdminSchedulePage from '@/pages/admin/AdminSchedulePage'
 import AdminGalleryPage from '@/pages/admin/AdminGalleryPage'
 import AdminPostsPage from '@/pages/admin/AdminPostsPage'
+import AdminUsersPage from '@/pages/admin/AdminUsersPage'
 import AdminInquiriesPage from '@/pages/admin/AdminInquiriesPage'
 import AdminCalendarPage from '@/pages/admin/AdminCalendarPage'
 
@@ -89,6 +90,7 @@ export default function App() {
           <Route path="schedule" element={<AdminSchedulePage />} />
           <Route path="gallery" element={<AdminGalleryPage />} />
           <Route path="posts" element={<AdminPostsPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
           <Route path="inquiries" element={<AdminInquiriesPage />} />
           <Route path="calendar" element={<AdminCalendarPage />} />
         </Route>

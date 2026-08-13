@@ -438,8 +438,30 @@ function OptionManager({
     ...emptyOption,
     sortOrder: product.options.length,
   })
+  // null 이면 "새로 추가", 숫자면 그 옵션을 수정하는 중입니다.
+  const [editingId, setEditingId] = useState<number | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const startEdit = (o: AdminProduct['options'][number]) => {
+    setEditingId(o.id)
+    // 응답에는 name(단일)만 있고 nameKo/nameJa 가 분리돼 오지 않습니다.
+    // 한국어 칸에 채우고 일본어는 비워둡니다 — 그대로 저장하면 일본어가 지워지므로
+    // 아래 안내 문구로 알립니다.
+    setForm({
+      nameKo: o.name,
+      nameJa: '',
+      price: o.price,
+      maxQuantity: o.maxQuantity,
+      sortOrder: 0,
+      active: true,
+    })
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setForm({ ...emptyOption, sortOrder: product.options.length })
+  }
 
   const set = <K extends keyof ProductOptionSavePayload>(
     k: K,
@@ -463,13 +485,18 @@ function OptionManager({
     <AdminModal
       title={`옵션 관리 — ${product.nameKo}`}
       onClose={onClose}
-      submitLabel="옵션 추가"
+      submitLabel={editingId === null ? '옵션 추가' : '옵션 수정'}
       onSubmit={async () => {
-        await adminApi.addProductOption(product.id, {
+        const payload = {
           ...form,
           nameKo: form.nameKo.trim(),
           nameJa: form.nameJa.trim(),
-        })
+        }
+        if (editingId === null) {
+          await adminApi.addProductOption(product.id, payload)
+        } else {
+          await adminApi.updateProductOption(product.id, editingId, payload)
+        }
         onChanged()
       }}
       wide
@@ -490,14 +517,24 @@ function OptionManager({
                     +{formatPrice(o.price, 'ko')} · 최대 {o.maxQuantity}개
                   </span>
                 </div>
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => void removeOption(o.id)}
-                  className="shrink-0 text-[11px] text-ink-600 hover:text-red-400"
-                >
-                  삭제
-                </button>
+                <div className="flex shrink-0 gap-2">
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => startEdit(o)}
+                    className="text-[11px] text-ink-400 hover:text-white"
+                  >
+                    수정
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => void removeOption(o.id)}
+                    className="text-[11px] text-ink-600 hover:text-red-400"
+                  >
+                    삭제
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -506,9 +543,27 @@ function OptionManager({
       </div>
 
       <div className="border-t border-ink-800 pt-5">
-        <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-ink-500">
-          새 옵션 추가
-        </p>
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-ink-500">
+            {editingId === null ? '새 옵션 추가' : '옵션 수정'}
+          </p>
+          {editingId !== null && (
+            <button
+              type="button"
+              onClick={cancelEdit}
+              className="text-[11px] text-ink-400 hover:text-white"
+            >
+              새로 추가로 돌아가기
+            </button>
+          )}
+        </div>
+
+        {editingId !== null && (
+          <p className="mb-3 rounded-lg border border-amber-500/25 bg-amber-500/5 px-3 py-2 text-[11px] leading-relaxed text-amber-200/80">
+            서버가 옵션의 일본어 이름을 따로 내려주지 않아 비워둔 상태입니다.
+            이대로 저장하면 일본어 이름이 지워집니다. 필요하면 다시 입력해주세요.
+          </p>
+        )}
 
         <BilingualField
           label="옵션명"

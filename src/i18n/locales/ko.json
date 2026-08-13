@@ -294,7 +294,8 @@
     "dayOff": "휴무",
     "specialDay": "특별 영업",
     "weekday": "요일",
-    "posts": "미디어 글"
+    "posts": "미디어 글",
+    "users": "관리자 계정"
   },
   "days": {
     "mon": "월",

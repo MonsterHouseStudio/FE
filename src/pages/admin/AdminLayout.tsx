@@ -15,6 +15,7 @@ const MENU = [
   { key: 'gallery', path: '/admin/gallery', end: false, icon: '▨' },
   { key: 'posts', path: '/admin/posts', end: false, icon: '✎' },
   { key: 'inquiries', path: '/admin/inquiries', end: false, icon: '✉' },
+  { key: 'users', path: '/admin/users', end: false, icon: '⚿' },
 ] as const
 
 export default function AdminLayout() {

@@ -6,6 +6,8 @@ import type {
   AdminInquiry,
   AdminPost,
   AdminProduct,
+  AdminUser,
+  AdminUserCreatePayload,
   ApiResponse,
   Availability,
   AvailabilityOverride,
@@ -23,6 +25,7 @@ import type {
   InquiryStatus,
   PageResponse,
   Post,
+  PasswordChangePayload,
   PostSavePayload,
   Product,
   ProductOptionSavePayload,
@@ -490,6 +493,27 @@ export const adminApi = {
 
   deleteGalleryItem: (id: number) =>
     adminRequest<void>(`/admin/gallery/${id}`, { method: 'DELETE' }),
+
+  // ----- 관리자 계정 -----
+  // 목록·생성·비활성화는 SUPER_ADMIN 전용입니다 (@PreAuthorize).
+  // MANAGER 가 호출하면 403 이 오므로 화면에서 미리 감춥니다.
+  getAdminUsers: () => adminRequest<AdminUser[]>('/admin/users'),
+
+  createAdminUser: (payload: AdminUserCreatePayload) =>
+    adminRequest<AdminUser>('/admin/users', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  disableAdminUser: (id: number) =>
+    adminRequest<void>(`/admin/users/${id}/disable`, { method: 'POST' }),
+
+  /** 본인 비밀번호 변경. 성공하면 서버가 기존 리프레시 토큰을 전부 폐기합니다. */
+  changeMyPassword: (payload: PasswordChangePayload) =>
+    adminRequest<void>('/admin/users/me/password', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
 
   // ----- 영업시간 -----
   getAvailability: () => adminRequest<Availability[]>('/admin/availability'),

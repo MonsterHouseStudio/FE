@@ -380,6 +380,27 @@ export interface PostSavePayload {
   translations: PostTranslation[]
 }
 
+/** 관리자 계정. AdminRole 은 store/adminAuth 의 것과 같은 값입니다. */
+export interface AdminUser {
+  id: number
+  username: string
+  displayName: string
+  role: 'SUPER_ADMIN' | 'MANAGER'
+  lastLoginAt: string | null
+}
+
+export interface AdminUserCreatePayload {
+  username: string
+  password: string
+  displayName: string
+  role: 'SUPER_ADMIN' | 'MANAGER'
+}
+
+export interface PasswordChangePayload {
+  currentPassword: string
+  newPassword: string
+}
+
 export type Weekday =
   | 'MONDAY'
   | 'TUESDAY'
