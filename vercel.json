@@ -1,0 +1,39 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+
+  "rewrites": [
+    {
+      "comment": "SPA 폴백. 이게 없으면 /ko 나 /admin/bookings 에서 새로고침할 때 404 가 납니다. 첫 화면에서 링크로 이동할 때는 멀쩡해 보여서 배포 직후엔 눈치채기 어렵습니다. Vercel 은 실제 파일(/assets/*)을 먼저 찾고 없을 때만 이 규칙을 적용하므로 정적 자산이 가려지지 않습니다.",
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+
+  "headers": [
+    {
+      "comment": "Vite 가 파일명에 해시를 넣으므로(index-a1b2c3.js) 내용이 바뀌면 이름이 바뀝니다. 영구 캐시가 안전합니다.",
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "comment": "index.html 은 절대 캐시하지 않습니다. 여기에 새 번들 파일명이 적혀 있어서, 캐시되면 배포해도 옛 화면이 계속 보입니다.",
+      "source": "/index.html",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ]
+}

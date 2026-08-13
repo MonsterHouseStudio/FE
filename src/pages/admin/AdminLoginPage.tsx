@@ -45,6 +45,19 @@ export default function AdminLoginPage() {
           </h1>
         </div>
 
+        {/*
+          목 모드에서는 백엔드가 없습니다.
+          관리자 화면은 공개 화면과 달리 목 구현이 없어서(실제 데이터를 바꾸는 게 목적이라
+          가짜 응답이 의미가 없습니다) 로그인 자체가 실패합니다.
+          시연 중에 고객이 눌러봤을 때 원인 모를 오류 대신 이유를 보게 합니다.
+        */}
+        {import.meta.env.VITE_USE_MOCK !== 'false' && (
+          <p className="mt-7 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-xs leading-relaxed text-amber-200/90">
+            지금은 <b>화면 미리보기</b> 배포입니다. 공개 페이지는 예시 데이터로 둘러보실 수
+            있지만, 관리자 기능은 서버를 연결한 뒤에 사용할 수 있습니다.
+          </p>
+        )}
+
         <form onSubmit={submit} className="surface mt-9 space-y-5 p-7">
           <div>
             <label className="label" htmlFor="username">
