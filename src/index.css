@@ -11,6 +11,13 @@
     scroll-behavior: smooth;
   }
 
+  /* 멀미·전정기관 문제가 있는 사용자에게 부드러운 스크롤은 통증입니다. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   body {
     @apply bg-ink-950 text-ink-100 font-sans antialiased;
     -webkit-font-smoothing: antialiased;
@@ -89,6 +96,30 @@
 
   .label {
     @apply mb-2 block text-sm font-semibold text-ink-200;
+  }
+
+  /*
+   * 히어로 한 장이 화면을 꽉 채웁니다.
+   * dvh 를 쓰는 이유: 모바일에서 100vh 는 주소창이 접힌 상태 기준이라
+   * 화면에 처음 들어올 때 아래가 잘립니다. dvh 는 실제 보이는 높이입니다.
+   * dvh 를 모르는 브라우저는 앞줄(vh)에서 멈추므로 폴백이 됩니다.
+   */
+  .hero-screen {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /*
+   * 배너 트랙의 가로 스크롤바 감추기.
+   * 전역 ::-webkit-scrollbar 에 height:10px 가 걸려 있어서
+   * 이걸 안 하면 히어로 밑에 스크롤바가 그대로 보입니다.
+   */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 
   /* 갤러리/미디어 이미지 자리 — 외부 이미지 없이도 시각적 밀도를 만듭니다 */

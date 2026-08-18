@@ -62,7 +62,13 @@
     "scheduleTitle": "近日開催の大会",
     "scheduleCta": "日程をすべて見る",
     "ctaTitle": "今から記録を始めましょう",
-    "ctaDesc": "予約は3分で完了。会員登録は不要です。"
+    "ctaDesc": "予約は3分で完了。会員登録は不要です。",
+    "heroCarousel": "ホームバナー",
+    "heroPrev": "前のバナー",
+    "heroNext": "次のバナー",
+    "heroGoTo": "{{n}}枚目のバナーを表示",
+    "heroSlideOf": "バナー {{n}} / {{total}}",
+    "heroScroll": "下にスクロール"
   },
   "shooting": {
     "title": "撮影案内",

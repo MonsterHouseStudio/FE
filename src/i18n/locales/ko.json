@@ -62,7 +62,13 @@
     "scheduleTitle": "다가오는 시합",
     "scheduleCta": "전체 일정 보기",
     "ctaTitle": "지금 기록을 시작하세요",
-    "ctaDesc": "예약은 3분이면 끝납니다. 회원가입은 필요 없습니다."
+    "ctaDesc": "예약은 3분이면 끝납니다. 회원가입은 필요 없습니다.",
+    "heroCarousel": "홈 배너",
+    "heroPrev": "이전 배너",
+    "heroNext": "다음 배너",
+    "heroGoTo": "{{n}}번째 배너 보기",
+    "heroSlideOf": "배너 {{n}} / {{total}}",
+    "heroScroll": "아래로 스크롤"
   },
   "shooting": {
     "title": "촬영 안내",
