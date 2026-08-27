@@ -41,6 +41,39 @@ jobs:
       - name: 프로덕션 빌드
         run: npm run build
 
+  e2e:
+    name: 크로스 브라우저 (Chromium · Firefox · WebKit)
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: 의존성 설치
+        run: npm ci
+
+      # 히어로 배너가 쓰는 scroll-snap · 100dvh · 비디오 자동재생은
+      # 엔진마다 다르게 동작합니다. Chromium 하나로는 아무것도 보장하지 못합니다.
+      # WebKit 은 iOS Safari 와 같은 엔진이라 실기기 없이 Safari 계열을 잡아줍니다.
+      - name: 브라우저 엔진 설치
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: E2E
+        run: npx playwright test
+
+      - name: 실패 시 트레이스 보관
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
   docker:
     name: 이미지 빌드
     runs-on: ubuntu-latest

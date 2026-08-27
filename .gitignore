@@ -17,3 +17,9 @@ yarn-error.log*
 
 # tsc -b 의 증분 빌드 캐시. 빌드할 때마다 바뀌어 커밋 노이즈만 만듭니다.
 *.tsbuildinfo
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

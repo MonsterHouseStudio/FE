@@ -23,7 +23,10 @@ npm run dev
 ```bash
 npx tsc --noEmit   # 타입 검사
 npm run build      # 프로덕션 빌드
+npm run e2e        # 크로스 브라우저 (Chromium · Firefox · WebKit · iOS Safari)
 ```
+
+`npm run e2e` 는 처음 한 번 `npx playwright install` 이 필요합니다.
 
 ---
 
@@ -96,8 +99,8 @@ XSS 로 영구 세션까지 털리지 않게 하기 위해서입니다.
 ## 아직 안 된 것
 
 - **일본어 감수** — `ja.json` 과 백엔드 `messages_ja.properties` 모두 기계 번역 초안입니다
-- **크로스 브라우저 검증** — Chromium 계열에서만 확인했습니다.
-  `scroll-snap` · `100dvh` · 비디오 자동재생은 브라우저별 차이가 큽니다
+- **실기기 확인** — Playwright 의 WebKit 으로 Safari 엔진은 검증하지만,
+  실제 iPhone 의 저전력 모드 자동재생 차단까지는 재현되지 않습니다
 
 ---
 
