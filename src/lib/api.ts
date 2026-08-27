@@ -42,7 +42,28 @@ import { currentAccessToken, refreshAccessToken } from '@/store/adminAuth'
 import { delay, toDateKey } from './utils'
 import { BOOKING_POLICY, latestBookableDate } from './bookingPolicy'
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
+/**
+ * 목 데이터 사용 여부.
+ *
+ * ★ 기본값이 "끔" 인 것이 중요합니다.
+ *
+ * 예전에는 `!== 'false'` 였습니다. 즉 환경변수를 빠뜨리면 목이 켜졌습니다.
+ * Vite 의 환경변수는 빌드 시점에 값이 박히므로, 배포 대시보드에 변수를 넣는 걸
+ * 잊으면 운영 사이트가 가짜 데이터로 떠 버립니다 — 크루 소개의 실명까지 그대로요.
+ * 그리고 재배포로는 안 고쳐지고 다시 빌드해야 합니다.
+ *
+ * 설정을 빠뜨렸을 때 "가짜 데이터로 조용히 뜨는 것" 보다
+ * "API 를 못 붙어 눈에 띄게 실패하는 것" 이 낫습니다. 그래서 켜려면 명시해야 합니다.
+ */
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
+
+/**
+ * 목 모드 여부.
+ *
+ * 예약 조회처럼 "저장된 데이터가 있어야 성립하는" 화면은 목 모드에서 성립하지 않습니다.
+ * 그냥 두면 알 수 없는 네트워크 오류로 보이므로, 화면이 미리 안내할 수 있게 내보냅니다.
+ */
+export const isMockMode = () => USE_MOCK
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
 
 /** 백엔드 연동 시 사용. 실패하면 ApiError 를 던집니다. */
@@ -185,6 +206,7 @@ export const api = {
 
     return {
       bookingCode: mockBookingCode(),
+      productId: payload.productId,
       productName: product?.name ?? '',
       durationMin: product?.durationMin ?? 60,
       startAt: payload.startAt,
@@ -213,6 +235,41 @@ export const api = {
         }, 0),
       createdAt: new Date().toISOString(),
     }
+  },
+
+  /**
+   * 예약 조회 — 예약번호 + 이메일.
+   *
+   * 로그인이 없는 서비스라 이메일이 사실상 비밀번호 역할을 합니다.
+   * 그래서 서버는 예약번호만으로는 아무것도 돌려주지 않습니다.
+   */
+  async findBooking(bookingCode: string, email: string, locale: Locale): Promise<Booking> {
+    return request<Booking>(
+      `/bookings/${encodeURIComponent(bookingCode)}?email=${encodeURIComponent(email)}`,
+      locale,
+    )
+  },
+
+  async cancelBooking(
+    bookingCode: string,
+    payload: { email: string; reason?: string },
+    locale: Locale,
+  ): Promise<Booking> {
+    return request<Booking>(`/bookings/${encodeURIComponent(bookingCode)}/cancel`, locale, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  },
+
+  async rescheduleBooking(
+    bookingCode: string,
+    payload: { email: string; startAt: string },
+    locale: Locale,
+  ): Promise<Booking> {
+    return request<Booking>(`/bookings/${encodeURIComponent(bookingCode)}/reschedule`, locale, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
   },
 
   async getCompetitions(locale: Locale): Promise<Competition[]> {
