@@ -109,6 +109,14 @@ export default function Footer() {
               {t('about.hoursValue')}
             </li>
             <li className="pt-2">
+              <Link
+                to={lp('/shooting/booking/lookup')}
+                className="text-ink-400 underline-offset-4 hover:text-brand-400 hover:underline"
+              >
+                {t('myBooking.title')}
+              </Link>
+            </li>
+            <li>
               <Link to={lp('/privacy')} className="text-ink-400 underline-offset-4 hover:text-brand-400 hover:underline">
                 {t('footer.privacy')}
               </Link>

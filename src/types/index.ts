@@ -49,6 +49,13 @@ export type BookingStatus = 'REQUESTED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELED'
 
 export interface Booking {
   bookingCode: string
+  /**
+   * 예약 변경 시 이 상품의 가능 시간을 다시 조회하는 데 씁니다.
+   *
+   * 선택 필드인 이유: 서버가 이 값을 내려주기 전 버전과도 화면이 동작해야 합니다.
+   * 없으면 조회·취소는 그대로 되고 시간 변경만 안내 문구로 대체됩니다.
+   */
+  productId?: number
   productName: string
   durationMin: number
   startAt: string

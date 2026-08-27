@@ -7,6 +7,7 @@ import Layout from '@/components/layout/Layout'
 import HomePage from '@/pages/HomePage'
 import ShootingPage from '@/pages/ShootingPage'
 import BookingPage from '@/pages/BookingPage'
+import MyBookingPage from '@/pages/MyBookingPage'
 import SchedulePage from '@/pages/SchedulePage'
 import InterpreterPage from '@/pages/InterpreterPage'
 import GalleryPage from '@/pages/GalleryPage'
@@ -72,6 +73,7 @@ export default function App() {
           <Route index element={<HomePage />} />
           <Route path="shooting" element={<ShootingPage />} />
           <Route path="shooting/booking" element={<BookingPage />} />
+          <Route path="shooting/booking/lookup" element={<MyBookingPage />} />
           <Route path="schedule" element={<SchedulePage />} />
           <Route path="interpreter" element={<InterpreterPage />} />
           <Route path="gallery" element={<GalleryPage />} />

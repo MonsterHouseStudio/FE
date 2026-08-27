@@ -565,10 +565,13 @@ export default function BookingPage() {
                   </div>
 
                   <div className="mt-9 flex flex-wrap justify-center gap-3">
+                    {/* 예약번호를 보고 있는 지금이 조회 화면을 알려주기 가장 좋은 순간입니다. */}
+                    <ButtonLink to={lp('/shooting/booking/lookup')}>
+                      {t('myBooking.title')}
+                    </ButtonLink>
                     <ButtonLink to={lp('/')} variant="outline">
                       {t('booking.backHome')}
                     </ButtonLink>
-                    <ButtonLink to={lp('/gallery')}>{t('nav.gallery')}</ButtonLink>
                   </div>
                 </div>
               </section>
