@@ -6,6 +6,7 @@ import { ApiError, api } from '@/lib/api'
 import { useLocale, useLocalePath } from '@/hooks/useLocale'
 import { cn, formatDate, formatPrice, formatTime } from '@/lib/utils'
 import { calcTotal, formatProductPrice } from '@/lib/price'
+import { BANK_ACCOUNT, computePaymentPlan } from '@/lib/payment'
 import type { Booking, Product } from '@/types'
 import Calendar from '@/components/booking/Calendar'
 import { Button, ButtonLink } from '@/components/ui/Button'
@@ -564,6 +565,9 @@ export default function BookingPage() {
                     </dl>
                   </div>
 
+                  {/* ---- 입금 안내 ---- */}
+                  <PaymentBox booking={result} />
+
                   <div className="mt-9 flex flex-wrap justify-center gap-3">
                     {/* 예약번호를 보고 있는 지금이 조회 화면을 알려주기 가장 좋은 순간입니다. */}
                     <ButtonLink to={lp('/shooting/booking/lookup')}>
@@ -653,5 +657,73 @@ export default function BookingPage() {
         </div>
       </div>
     </>
+  )
+}
+
+/**
+ * 예약 완료 후 입금 안내.
+ *
+ * 총액과 촬영일로 "지금 얼마를 어느 계좌로 보내야 하는지"를 계산해 보여줍니다.
+ * 결제 API 가 없으므로 입금 확인은 사장님이 통장을 보고 수동으로 합니다.
+ * 계좌 정보는 lib/payment.ts 한 곳에서만 관리합니다(자리표시자 → 실제 계좌로 교체).
+ */
+function PaymentBox({ booking }: { booking: Booking }) {
+  const { t } = useTranslation()
+  const locale = useLocale()
+  const plan = computePaymentPlan(booking.totalPrice, booking.startAt)
+
+  return (
+    <div className="mx-auto mt-6 max-w-sm rounded-xl border border-brand-700/50 bg-ink-950 p-6 text-left">
+      <div className="text-[11px] uppercase tracking-[0.2em] text-brand-400">
+        {t('payment.title')}
+      </div>
+
+      {BANK_ACCOUNT.isPlaceholder && (
+        <p className="mt-3 rounded-lg bg-red-950/40 px-3 py-2 text-[11px] leading-relaxed text-red-300">
+          {t('payment.placeholderWarn')}
+        </p>
+      )}
+
+      {/* 지금 입금할 금액 */}
+      <div className="mt-4 flex items-baseline justify-between gap-4">
+        <span className="text-sm text-ink-400">
+          {t('payment.dueNow')}
+          <span className="ml-1.5 rounded bg-brand-600/20 px-1.5 py-0.5 text-[10px] font-semibold text-brand-300">
+            {plan.mode === 'FULL' ? t('payment.fullLabel') : t('payment.depositLabel')}
+          </span>
+        </span>
+        <span className="font-display text-xl tracking-tightest text-white">
+          {formatPrice(plan.dueNow, locale)}
+        </span>
+      </div>
+
+      {plan.mode === 'DEPOSIT' ? (
+        <p className="mt-2 text-[11px] leading-relaxed text-ink-500">
+          {t('payment.balance')} {formatPrice(plan.balance, locale)} · {t('payment.balanceDue')}
+        </p>
+      ) : (
+        <p className="mt-2 text-[11px] leading-relaxed text-ink-500">
+          {t('payment.imminentNote')}
+        </p>
+      )}
+
+      {/* 계좌 */}
+      <dl className="mt-5 space-y-1.5 border-t border-ink-800 pt-4 text-sm">
+        <div className="flex justify-between gap-4">
+          <dt className="text-ink-500">{t('payment.bank')}</dt>
+          <dd className="text-right text-ink-100">
+            {BANK_ACCOUNT.bank} {BANK_ACCOUNT.number}
+            <br />
+            <span className="text-ink-400">({BANK_ACCOUNT.holder})</span>
+          </dd>
+        </div>
+      </dl>
+
+      <ul className="mt-4 space-y-1 text-[11px] leading-relaxed text-ink-500">
+        <li>· {t('payment.depositorNote')}</li>
+        <li>· {t('payment.confirmNote')}</li>
+        <li>· {t('payment.refundNote')}</li>
+      </ul>
+    </div>
   )
 }
