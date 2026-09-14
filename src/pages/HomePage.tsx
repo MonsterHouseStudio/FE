@@ -82,7 +82,8 @@ export default function HomePage() {
             <Spinner />
           </div>
         ) : (
-          <div className="grid gap-5 md:grid-cols-3">
+          // 모바일은 2열, 태블릿 이상은 3열. 2열에서 좁아지므로 여백·간격을 줄입니다.
+          <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3">
             {products.map((product, i) => (
               <Link
                 key={product.id}
@@ -90,24 +91,26 @@ export default function HomePage() {
                 className="surface surface-hover group flex flex-col overflow-hidden"
               >
                 <Photo seed={product.id * 4} className="aspect-[4/3] w-full" />
-                <div className="flex flex-1 flex-col p-6">
+                <div className="flex flex-1 flex-col p-4 sm:p-6">
                   <div className="flex items-center gap-2">
                     <span className="font-display text-xs text-brand-500">
                       0{i + 1}
                     </span>
                     <Badge tone="brand">{t('common.minutes', { count: product.durationMin })}</Badge>
                   </div>
-                  <h3 className="mt-3 font-display text-xl tracking-tightest text-white">
+                  <h3 className="mt-3 font-display text-base tracking-tightest text-white sm:text-xl">
                     {product.name}
                   </h3>
-                  <p className="mt-3 flex-1 text-sm leading-relaxed text-ink-400">
+                  {/* 2열에서 설명이 길면 카드 높이가 들쭉날쭉해지므로 모바일은 2줄로 자릅니다. */}
+                  <p className="mt-2 line-clamp-2 flex-1 text-xs leading-relaxed text-ink-400 sm:mt-3 sm:line-clamp-none sm:text-sm">
                     {product.description}
                   </p>
-                  <div className="mt-6 flex items-center justify-between border-t border-ink-800 pt-4">
-                    <span className="font-display text-lg tracking-tightest text-white">
+                  {/* 좁은 폭에서 가격과 CTA 가 한 줄에 안 들어가면 줄바꿈되게 둡니다. */}
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-ink-800 pt-3 sm:mt-6 sm:pt-4">
+                    <span className="font-display text-base tracking-tightest text-white sm:text-lg">
                       {formatPrice(product.price, locale)}
                     </span>
-                    <span className="text-xs font-bold uppercase tracking-wider text-brand-400 transition-transform group-hover:translate-x-1">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-brand-400 transition-transform group-hover:translate-x-1 sm:text-xs">
                       {t('shooting.book')} →
                     </span>
                   </div>
