@@ -5,9 +5,9 @@ import type { AdminBanner, BannerMediaType, BannerSavePayload } from '@/types'
 import { Badge } from '@/components/ui/primitives'
 import { Button } from '@/components/ui/Button'
 import { AdminPageHeader } from './AdminLayout'
-import { AsyncBoundary } from './AsyncBoundary'
-import { AdminModal, BilingualField, Field } from './AdminModal'
-import { ImageUploader } from './ImageUploader'
+import { AsyncBoundary } from '@/components/admin/AsyncBoundary'
+import { AdminModal, BilingualField, Field } from '@/components/admin/AdminModal'
+import { ImageUploader } from '@/components/admin/ImageUploader'
 
 function emptyBanner(sortOrder: number): BannerSavePayload {
   return {

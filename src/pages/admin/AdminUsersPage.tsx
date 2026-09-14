@@ -7,8 +7,8 @@ import type { AdminUser, AdminUserCreatePayload } from '@/types'
 import { Badge } from '@/components/ui/primitives'
 import { Button } from '@/components/ui/Button'
 import { AdminPageHeader } from './AdminLayout'
-import { AsyncBoundary } from './AsyncBoundary'
-import { AdminModal, Field } from './AdminModal'
+import { AsyncBoundary } from '@/components/admin/AsyncBoundary'
+import { AdminModal, Field } from '@/components/admin/AdminModal'
 
 const ROLE_LABEL: Record<AdminUser['role'], string> = {
   SUPER_ADMIN: '최고 관리자',

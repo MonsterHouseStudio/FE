@@ -13,8 +13,8 @@ import type {
 import { Badge } from '@/components/ui/primitives'
 import { Button } from '@/components/ui/Button'
 import { AdminPageHeader } from './AdminLayout'
-import { AsyncBoundary } from './AsyncBoundary'
-import { AdminModal, BilingualField, Field, LineListField } from './AdminModal'
+import { AsyncBoundary } from '@/components/admin/AsyncBoundary'
+import { AdminModal, BilingualField, Field, LineListField } from '@/components/admin/AdminModal'
 
 const TYPE_LABEL: Record<ProductType, string> = {
   PHOTO: '사진 촬영',

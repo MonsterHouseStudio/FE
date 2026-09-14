@@ -5,8 +5,8 @@ import { useAsync } from '@/hooks/useAsync'
 import { formatDate, formatPrice, formatTime } from '@/lib/utils'
 import { Badge } from '@/components/ui/primitives'
 import { AdminPageHeader } from './AdminLayout'
-import { AsyncBoundary } from './AsyncBoundary'
-import { STATUS_TONE } from './statusTone'
+import { AsyncBoundary } from '@/components/admin/AsyncBoundary'
+import { STATUS_TONE } from '@/components/admin/statusTone'
 
 export default function AdminDashboardPage() {
   const { t } = useTranslation()

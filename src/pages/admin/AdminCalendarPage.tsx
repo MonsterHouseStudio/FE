@@ -7,9 +7,9 @@ import type { AvailabilityOverride, Booking, Weekday } from '@/types'
 import { Badge } from '@/components/ui/primitives'
 import { Button } from '@/components/ui/Button'
 import { AdminPageHeader } from './AdminLayout'
-import { AsyncBoundary } from './AsyncBoundary'
-import { OverrideBadge, OverrideModal, WeeklyHoursModal } from './AvailabilityEditor'
-import { STATUS_TONE } from './statusTone'
+import { AsyncBoundary } from '@/components/admin/AsyncBoundary'
+import { OverrideBadge, OverrideModal, WeeklyHoursModal } from '@/components/admin/AvailabilityEditor'
+import { STATUS_TONE } from '@/components/admin/statusTone'
 
 const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const
 

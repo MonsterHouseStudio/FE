@@ -13,8 +13,8 @@ import type {
 import { Badge } from '@/components/ui/primitives'
 import { Button } from '@/components/ui/Button'
 import { AdminPageHeader } from './AdminLayout'
-import { AsyncBoundary } from './AsyncBoundary'
-import { AdminModal, Field } from './AdminModal'
+import { AsyncBoundary } from '@/components/admin/AsyncBoundary'
+import { AdminModal, Field } from '@/components/admin/AdminModal'
 
 /** 한국어 번역이 없으면 아무 번역이나 씁니다 — 관리자 화면은 비어 보이는 게 최악입니다. */
 function pick(row: AdminCompetition) {

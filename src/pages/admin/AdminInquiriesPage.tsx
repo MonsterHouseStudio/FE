@@ -8,7 +8,7 @@ import type { AdminInquiry, InquiryStatus } from '@/types'
 import { Badge } from '@/components/ui/primitives'
 import { Button } from '@/components/ui/Button'
 import { AdminPageHeader } from './AdminLayout'
-import { AsyncBoundary } from './AsyncBoundary'
+import { AsyncBoundary } from '@/components/admin/AsyncBoundary'
 
 type Filter = 'ALL' | InquiryStatus
 
