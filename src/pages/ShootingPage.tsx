@@ -64,7 +64,12 @@ export default function ShootingPage() {
             eyebrow={group.type}
             title={t(group.labelKey)}
           >
-            <div className="space-y-5">
+            <div className="relative space-y-5">
+              {/* 유리 카드가 굴절할 붉은 앰비언트 글로우 */}
+              <div aria-hidden className="pointer-events-none absolute -inset-x-6 -inset-y-8 -z-10 overflow-hidden">
+                <div className="absolute left-[10%] top-0 h-64 w-64 rounded-full bg-brand-600/20 blur-[100px]" />
+                <div className="absolute bottom-0 right-[12%] h-72 w-72 rounded-full bg-brand-700/20 blur-[110px]" />
+              </div>
               {group.items.map((product, i) => (
                 <ProductCard
                   key={product.id}
@@ -135,8 +140,12 @@ function ProductCard({
   const options = product.options ?? []
 
   return (
-    <article className="surface grid overflow-hidden lg:grid-cols-[minmax(0,360px)_1fr]">
-      <Photo seed={product.id * 4} className="aspect-[4/3] w-full lg:aspect-auto" />
+    <article className="glass-red grid lg:grid-cols-[minmax(0,360px)_1fr]">
+      <div className="relative">
+        <Photo seed={product.id * 4} className="aspect-[4/3] h-full w-full lg:aspect-auto" />
+        {/* 사진을 유리 톤과 잇는 붉은 그라데이션 (세로/가로 배치 모두 자연스럽게) */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-950/50 via-transparent to-transparent lg:bg-gradient-to-r" />
+      </div>
 
       <div className="flex flex-col p-7 sm:p-9">
         <div className="flex flex-wrap items-center gap-3">
@@ -175,7 +184,7 @@ function ProductCard({
 
         {/* 추가 옵션 */}
         {options.length > 0 && (
-          <div className="mt-6 rounded-lg border border-ink-800 bg-ink-950/40 p-5">
+          <div className="mt-6 rounded-lg border border-white/10 bg-black/20 p-5">
             <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-ink-500">
               {t('shooting.options')}
             </h4>
@@ -203,7 +212,7 @@ function ProductCard({
           <p className="mt-4 text-xs text-ink-500">* {product.note}</p>
         )}
 
-        <div className="mt-7 flex flex-wrap items-end justify-between gap-4 border-t border-ink-800 pt-6">
+        <div className="mt-7 flex flex-wrap items-end justify-between gap-4 border-t border-white/10 pt-6">
           <div>
             <div className="text-[11px] uppercase tracking-[0.2em] text-ink-500">
               {t('shooting.price')}
