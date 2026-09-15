@@ -21,15 +21,13 @@ export const DEPOSIT_RATIO = 0.5
 export const FULL_PAYMENT_WITHIN_DAYS = 14
 
 /**
- * ⚠⚠⚠ 실제 계좌로 교체하세요 ⚠⚠⚠
- * 아래는 자리표시자입니다. 진짜 계좌가 아닙니다. 배포 전 반드시 실제 값으로 바꾸세요.
- * (이 한 곳만 바꾸면 예약 완료 화면·안내에 모두 반영됩니다.)
+ * 입금 계좌. (이 한 곳만 바꾸면 예약 완료 화면·안내에 모두 반영됩니다.)
  */
 export const BANK_ACCOUNT = {
-  bank: '○○은행',
-  number: '000-0000-000000',
-  holder: '몬스터하우스',
-  isPlaceholder: true, // 실제 계좌로 바꾼 뒤 false 로 두면 경고 배너가 사라집니다.
+  bank: '신한',
+  number: '110-221-942670',
+  holder: '안혜준',
+  isPlaceholder: false, // 실제 계좌. true 로 두면 경고 배너가 표시됩니다.
 } as const
 
 export type PaymentMode = 'DEPOSIT' | 'FULL'
