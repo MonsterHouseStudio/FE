@@ -82,41 +82,54 @@ export default function HomePage() {
             <Spinner />
           </div>
         ) : (
-          // 모바일은 2열, 태블릿 이상은 3열. 2열에서 좁아지므로 여백·간격을 줄입니다.
-          <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3">
-            {products.map((product, i) => (
-              <Link
-                key={product.id}
-                to={`${lp('/shooting/booking')}?product=${product.id}`}
-                className="surface surface-hover group flex flex-col overflow-hidden"
-              >
-                <Photo seed={product.id * 4} className="aspect-[4/3] w-full" />
-                <div className="flex flex-1 flex-col p-4 sm:p-6">
-                  <div className="flex items-center gap-2">
-                    <span className="font-display text-xs text-brand-500">
-                      0{i + 1}
-                    </span>
-                    <Badge tone="brand">{t('common.minutes', { count: product.durationMin })}</Badge>
+          // 유리 카드가 굴절할 대상이 있도록 그리드 뒤에 붉은 앰비언트 글로우를 깝니다.
+          <div className="relative">
+            <div aria-hidden className="pointer-events-none absolute -inset-x-6 -inset-y-10 -z-10 overflow-hidden">
+              <div className="absolute left-[8%] top-4 h-64 w-64 rounded-full bg-brand-600/25 blur-[90px]" />
+              <div className="absolute right-[12%] top-1/3 h-72 w-72 rounded-full bg-brand-500/20 blur-[100px]" />
+              <div className="absolute bottom-0 left-1/2 h-56 w-72 -translate-x-1/2 rounded-full bg-brand-700/25 blur-[90px]" />
+            </div>
+
+            {/* 모바일은 2열, 태블릿 이상은 3열. 2열에서 좁아지므로 여백·간격을 줄입니다. */}
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3">
+              {products.map((product, i) => (
+                <Link
+                  key={product.id}
+                  to={`${lp('/shooting/booking')}?product=${product.id}`}
+                  className="glass-red glass-red-hover group flex flex-col"
+                >
+                  {/* 사진 하단을 유리 톤으로 자연스럽게 잇는 붉은 그라데이션 오버레이 */}
+                  <div className="relative">
+                    <Photo seed={product.id * 4} className="aspect-[4/3] w-full" />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-950/50 via-transparent to-transparent" />
                   </div>
-                  <h3 className="mt-3 font-display text-base tracking-tightest text-white sm:text-xl">
-                    {product.name}
-                  </h3>
-                  {/* 2열에서 설명이 길면 카드 높이가 들쭉날쭉해지므로 모바일은 2줄로 자릅니다. */}
-                  <p className="mt-2 line-clamp-2 flex-1 text-xs leading-relaxed text-ink-400 sm:mt-3 sm:line-clamp-none sm:text-sm">
-                    {product.description}
-                  </p>
-                  {/* 좁은 폭에서 가격과 CTA 가 한 줄에 안 들어가면 줄바꿈되게 둡니다. */}
-                  <div className="mt-4 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-ink-800 pt-3 sm:mt-6 sm:pt-4">
-                    <span className="font-display text-base tracking-tightest text-white sm:text-lg">
-                      {formatPrice(product.price, locale)}
-                    </span>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-brand-400 transition-transform group-hover:translate-x-1 sm:text-xs">
-                      {t('shooting.book')} →
-                    </span>
+                  <div className="flex flex-1 flex-col p-4 sm:p-6">
+                    <div className="flex items-center gap-2">
+                      <span className="font-display text-xs text-brand-300">
+                        0{i + 1}
+                      </span>
+                      <Badge tone="brand">{t('common.minutes', { count: product.durationMin })}</Badge>
+                    </div>
+                    <h3 className="mt-3 font-display text-base tracking-tightest text-white sm:text-xl">
+                      {product.name}
+                    </h3>
+                    {/* 2열에서 설명이 길면 카드 높이가 들쭉날쭉해지므로 모바일은 2줄로 자릅니다. */}
+                    <p className="mt-2 line-clamp-2 flex-1 text-xs leading-relaxed text-ink-300 sm:mt-3 sm:line-clamp-none sm:text-sm">
+                      {product.description}
+                    </p>
+                    {/* 좁은 폭에서 가격과 CTA 가 한 줄에 안 들어가면 줄바꿈되게 둡니다. */}
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-white/10 pt-3 sm:mt-6 sm:pt-4">
+                      <span className="font-display text-base tracking-tightest text-white sm:text-lg">
+                        {formatPrice(product.price, locale)}
+                      </span>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-brand-300 transition-transform group-hover:translate-x-1 sm:text-xs">
+                        {t('shooting.book')} →
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </Section>
