@@ -71,7 +71,7 @@ export default function InterpreterPage() {
     if (!form.name.trim()) next.name = t('booking.errorName')
     if (!form.contact.trim()) next.contact = t('booking.errorPhone')
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) next.email = t('booking.errorEmail')
-    if (!form.content.trim()) next.content = t('common.required')
+    if (!form.content.trim()) next.content = t('interpreter.errorContent')
     if (!form.privacyAgreed) next.privacyAgreed = t('booking.errorPrivacy')
     setErrors(next)
     if (Object.keys(next).length > 0) return

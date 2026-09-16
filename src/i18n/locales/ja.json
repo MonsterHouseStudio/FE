@@ -214,6 +214,7 @@
     "email": "メールアドレス",
     "content": "お申し込み内容",
     "contentPlaceholder": "日程、場所、必要な通訳の範囲をご記入ください。",
+    "errorContent": "お申し込み内容をご入力ください。",
     "privacy": "個人情報の収集・利用に同意します",
     "submit": "申し込む",
     "submitting": "送信中...",

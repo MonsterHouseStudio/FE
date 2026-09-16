@@ -214,6 +214,7 @@
     "email": "이메일",
     "content": "신청 내용",
     "contentPlaceholder": "일정, 장소, 필요한 통역 범위를 적어주세요.",
+    "errorContent": "신청 내용을 입력해주세요.",
     "privacy": "개인정보 수집·이용에 동의합니다",
     "submit": "신청하기",
     "submitting": "전송 중...",
