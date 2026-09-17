@@ -35,6 +35,7 @@ export default {
       fontFamily: {
         sans: [
           'Pretendard',
+          '"Pretendard JP"',
           '-apple-system',
           'BlinkMacSystemFont',
           '"Segoe UI"',
@@ -45,11 +46,11 @@ export default {
           'Roboto',
           'sans-serif',
         ],
-        // display 를 별도 영문 폰트(Impact 등)로 두면 한글·일본어 글자만
-        // 폴백 폰트로 떨어져 한 제목 안에서 서체가 갈라집니다.
-        // 웹폰트를 붙이기 전까지는 sans 와 같은 스택 + font-black 으로 무게를 냅니다.
+        // 제목: 한/일/영을 한 폰트로 덮어야 서체가 안 갈라집니다.
+        // Pretendard 900(Black)을 실제 로드해 굵게 냅니다(일본어는 Pretendard JP).
         display: [
           'Pretendard',
+          '"Pretendard JP"',
           '-apple-system',
           'BlinkMacSystemFont',
           '"Segoe UI"',
@@ -59,6 +60,9 @@ export default {
           'Meiryo',
           'sans-serif',
         ],
+        // 영문 전용 라벨(BODYBUILDING MEDIA, SERVICES…)에만 쓰는 임팩트 서체.
+        // Anton 은 라틴 전용이라 한/일 요소에는 쓰지 않습니다(폴백으로 Pretendard).
+        poster: ['Anton', 'Pretendard', '"Pretendard JP"', 'sans-serif'],
       },
       letterSpacing: {
         // CJK 는 자간을 많이 좁히면 글자가 붙어 보입니다. -0.045em → -0.02em

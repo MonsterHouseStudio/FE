@@ -77,7 +77,7 @@
   }
 
   .eyebrow {
-    @apply text-xs font-bold uppercase tracking-[0.25em] text-brand-400;
+    @apply font-poster text-sm uppercase tracking-[0.28em] text-brand-400;
   }
 
   .surface {
