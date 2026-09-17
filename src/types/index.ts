@@ -130,6 +130,10 @@ export interface GalleryItem {
 export interface Post {
   id: number
   slug: string
+  /** 목록 응답에만 있습니다(상세엔 없음). SNS 카드는 linkUrl 로 외부 이동. */
+  kind?: PostKind
+  category?: PostCategory
+  linkUrl?: string | null
   series: string
   title: string
   excerpt: string
@@ -375,7 +379,11 @@ export interface CompetitionSavePayload {
   translations: CompetitionTranslation[]
 }
 
-export type PostCategory = 'MEDIA' | 'NOTICE'
+/** 콘텐츠 종류: 미디어 글 / SNS(유튜브 링크) */
+export type PostKind = 'ARTICLE' | 'SNS'
+
+/** MEDIA 는 구버전 값(서버가 CREW 로 이관). 신규 작성에는 쓰지 않습니다. */
+export type PostCategory = 'SPONSOR' | 'STORY' | 'CREW' | 'ETC' | 'NOTICE' | 'MEDIA'
 
 export interface PostTranslation {
   locale: ServerLocale
@@ -388,9 +396,11 @@ export interface PostTranslation {
 export interface AdminPost {
   id: number
   slug: string
+  kind: PostKind
   category: PostCategory
   thumbnailKey: string | null
   thumbnailUrl: string | null
+  linkUrl: string | null
   published: boolean
   publishedAt: string | null
   viewCount: number
@@ -400,8 +410,10 @@ export interface AdminPost {
 
 export interface PostSavePayload {
   slug: string
+  kind: PostKind
   category: PostCategory
   thumbnailKey: string
+  linkUrl: string
   published: boolean
   translations: PostTranslation[]
 }

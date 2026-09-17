@@ -5,119 +5,154 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { useLocale, useLocalePath } from '@/hooks/useLocale'
 import { cn, formatDate } from '@/lib/utils'
+import type { Locale } from '@/i18n'
+import type { Post, PostCategory } from '@/types'
 import { EmptyBlock, LoadingBlock, PageHeader, Photo, Section } from '@/components/ui/primitives'
+
+/** 카테고리 라벨(한/일). 서버 enum → 표시 이름. */
+const CATEGORY_LABEL: Record<PostCategory, { ko: string; ja: string }> = {
+  SPONSOR: { ko: '협찬사', ja: 'スポンサー' },
+  STORY: { ko: '스토리', ja: 'ストーリー' },
+  CREW: { ko: '크루 이야기', ja: 'クルーの話' },
+  ETC: { ko: '기타', ja: 'その他' },
+  NOTICE: { ko: '공지', ja: 'お知らせ' },
+  MEDIA: { ko: '미디어', ja: 'メディア' },
+}
+
+function catLabel(cat: PostCategory | undefined, locale: Locale): string {
+  if (!cat) return ''
+  return CATEGORY_LABEL[cat]?.[locale === 'ja' ? 'ja' : 'ko'] ?? ''
+}
 
 export default function MediaPage() {
   const { t } = useTranslation()
   const locale = useLocale()
   const lp = useLocalePath()
-  const [series, setSeries] = useState<string>('ALL')
+  const [cat, setCat] = useState<'ALL' | PostCategory>('ALL')
 
   const { data, isLoading } = useQuery({
     queryKey: ['posts', locale],
     queryFn: () => api.getPosts(locale),
   })
 
-  const seriesList = useMemo(
-    () => ['ALL', ...Array.from(new Set((data ?? []).map((p) => p.series)))],
+  // 데이터에 실제로 있는 카테고리만 필터 버튼으로 노출합니다.
+  const catList = useMemo<Array<'ALL' | PostCategory>>(
+    () => ['ALL', ...Array.from(new Set((data ?? []).map((p) => p.category).filter(Boolean) as PostCategory[]))],
     [data],
   )
 
   const filtered = useMemo(
-    () => (data ?? []).filter((p) => (series === 'ALL' ? true : p.series === series)),
-    [data, series],
+    () => (data ?? []).filter((p) => (cat === 'ALL' ? true : p.category === cat)),
+    [data, cat],
   )
-
-  const [featured, ...rest] = filtered
 
   return (
     <>
       <PageHeader eyebrow={t('media.subtitle')} title={t('media.title')} desc={t('media.desc')} />
 
       <Section>
-        {/* 시리즈 필터 */}
-        <div className="mb-9 flex flex-wrap gap-2">
-          {seriesList.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => setSeries(s)}
-              className={cn(
-                'rounded-full border px-5 py-2 text-xs font-bold uppercase tracking-wider transition-colors',
-                series === s
-                  ? 'border-brand-500 bg-brand-600 text-white'
-                  : 'border-ink-800 text-ink-400 hover:border-ink-600 hover:text-white',
-              )}
-            >
-              {s === 'ALL' ? t('media.seriesAll') : s}
-            </button>
-          ))}
-        </div>
+        {/* 카테고리 필터 */}
+        {catList.length > 1 && (
+          <div className="mb-9 flex flex-wrap gap-2">
+            {catList.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCat(c)}
+                className={cn(
+                  'rounded-full border px-5 py-2 text-xs font-bold uppercase tracking-wider transition-colors',
+                  cat === c
+                    ? 'border-brand-500 bg-brand-600 text-white'
+                    : 'border-ink-800 text-ink-400 hover:border-ink-600 hover:text-white',
+                )}
+              >
+                {c === 'ALL' ? t('media.seriesAll') : catLabel(c, locale)}
+              </button>
+            ))}
+          </div>
+        )}
 
         {isLoading ? (
           <LoadingBlock label={t('common.loading')} />
         ) : filtered.length === 0 ? (
           <EmptyBlock label={t('common.empty')} />
         ) : (
-          <div className="space-y-10">
-            {/* 대표 글 */}
-            {featured && (
-              <Link
-                to={lp(`/media/${featured.slug}`)}
-                className="surface surface-hover group grid overflow-hidden lg:grid-cols-2"
-              >
-                <Photo src={featured.thumbnailUrl} seed={featured.thumbnailSeed} alt={featured.title} className="aspect-[16/10] w-full lg:aspect-auto" />
-                <div className="flex flex-col justify-center p-8 sm:p-12">
-                  <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wider">
-                    <span className="text-brand-400">{featured.series}</span>
-                    <span className="text-ink-700">·</span>
-                    <span className="text-ink-500">{formatDate(featured.publishedAt, locale)}</span>
-                  </div>
-                  <h2 className="mt-4 font-display text-2xl leading-tight tracking-tightest text-white group-hover:text-brand-300 sm:text-3xl">
-                    {featured.title}
-                  </h2>
-                  <p className="mt-5 text-sm leading-relaxed text-ink-400">{featured.excerpt}</p>
-                  <div className="mt-7 flex items-center gap-4 text-xs text-ink-600">
-                    <span>{t('common.viewCount', { count: featured.viewCount })}</span>
-                    <span className="font-bold uppercase tracking-wider text-brand-400 transition-transform group-hover:translate-x-1">
-                      {t('media.readMore')} →
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            )}
-
-            {/* 나머지 */}
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {rest.map((post) => (
-                <Link
-                  key={post.id}
-                  to={lp(`/media/${post.slug}`)}
-                  className="surface surface-hover group overflow-hidden"
-                >
-                  <Photo src={post.thumbnailUrl} seed={post.thumbnailSeed} alt={post.title} className="aspect-[16/10] w-full" />
-                  <div className="p-6">
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wider">
-                      <span className="text-brand-400">{post.series}</span>
-                      <span className="text-ink-700">·</span>
-                      <span className="text-ink-500">{formatDate(post.publishedAt, locale)}</span>
-                    </div>
-                    <h3 className="mt-3 text-base font-bold leading-snug text-white group-hover:text-brand-300">
-                      {post.title}
-                    </h3>
-                    <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-ink-400">
-                      {post.excerpt}
-                    </p>
-                    <p className="mt-5 text-xs text-ink-600">
-                      {t('common.viewCount', { count: post.viewCount })}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((post) => (
+              <MediaCard key={post.id} post={post} locale={locale} lp={lp} />
+            ))}
           </div>
         )}
       </Section>
     </>
+  )
+}
+
+/** SNS 카드는 외부(유튜브)로, 글 카드는 상세 페이지로 이동합니다. */
+function MediaCard({
+  post,
+  locale,
+  lp,
+}: {
+  post: Post
+  locale: Locale
+  lp: (p: string) => string
+}) {
+  const isSns = post.kind === 'SNS' && !!post.linkUrl
+
+  const inner = (
+    <>
+      <div className="relative">
+        <Photo
+          src={post.thumbnailUrl}
+          seed={post.thumbnailSeed}
+          alt={post.title}
+          className="aspect-video w-full"
+        />
+        {isSns && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-600/90 text-white transition-transform group-hover:scale-110">
+              ▶
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="p-6">
+        <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wider">
+          <span className="text-brand-400">{catLabel(post.category, locale)}</span>
+          {post.series && (
+            <>
+              <span className="text-ink-700">·</span>
+              <span className="text-ink-500">{post.series}</span>
+            </>
+          )}
+        </div>
+        <h3 className="mt-3 text-base font-bold leading-snug text-white group-hover:text-brand-300">
+          {post.title}
+        </h3>
+        {!isSns && post.excerpt && (
+          <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-ink-400">{post.excerpt}</p>
+        )}
+        <p className="mt-5 text-xs text-ink-600">
+          {isSns
+            ? locale === 'ja'
+              ? 'YouTube で見る →'
+              : 'YouTube에서 보기 →'
+            : formatDate(post.publishedAt, locale)}
+        </p>
+      </div>
+    </>
+  )
+
+  const className = 'surface surface-hover group overflow-hidden'
+
+  return isSns ? (
+    <a href={post.linkUrl ?? '#'} target="_blank" rel="noreferrer noopener" className={className}>
+      {inner}
+    </a>
+  ) : (
+    <Link to={lp(`/media/${post.slug}`)} className={className}>
+      {inner}
+    </Link>
   )
 }

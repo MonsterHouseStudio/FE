@@ -6,6 +6,7 @@ import { formatDate } from '@/lib/utils'
 import type {
   AdminPost,
   PostCategory,
+  PostKind,
   PostSavePayload,
   PostTranslation,
   ServerLocale,
@@ -17,10 +18,22 @@ import { AsyncBoundary } from '@/components/admin/AsyncBoundary'
 import { AdminModal, Field } from '@/components/admin/AdminModal'
 import { ImageUploader } from '@/components/admin/ImageUploader'
 
-const CATEGORY_LABEL: Record<PostCategory, string> = {
-  MEDIA: '미디어',
-  NOTICE: '공지',
+const KIND_LABEL: Record<PostKind, string> = {
+  ARTICLE: '미디어',
+  SNS: 'SNS',
 }
+
+/** 관리자가 고를 수 있는 카테고리(글 전용). 구값 MEDIA 는 목록 표시에만 씁니다. */
+const CATEGORY_LABEL: Record<PostCategory, string> = {
+  SPONSOR: '협찬사',
+  STORY: '스토리',
+  CREW: '크루 이야기',
+  ETC: '기타',
+  NOTICE: '공지',
+  MEDIA: '미디어(구)',
+}
+
+const SELECTABLE_CATEGORIES: PostCategory[] = ['SPONSOR', 'STORY', 'CREW', 'ETC', 'NOTICE']
 
 /** 제목에서 slug 후보를 만듭니다. 한글은 slug 규칙(영소문자·숫자·하이픈)에 못 들어갑니다. */
 function slugify(title: string) {
@@ -35,8 +48,10 @@ function slugify(title: string) {
 function emptyPost(): PostSavePayload {
   return {
     slug: '',
-    category: 'MEDIA',
+    kind: 'ARTICLE',
+    category: 'CREW',
     thumbnailKey: '',
+    linkUrl: '',
     published: false,
     translations: [],
   }
@@ -45,8 +60,11 @@ function emptyPost(): PostSavePayload {
 function toPayload(p: AdminPost): PostSavePayload {
   return {
     slug: p.slug,
-    category: p.category,
+    kind: p.kind,
+    // 구값(MEDIA)이 넘어오면 선택 가능한 값으로 보정합니다.
+    category: p.category === 'MEDIA' ? 'CREW' : p.category,
     thumbnailKey: p.thumbnailKey ?? '',
+    linkUrl: p.linkUrl ?? '',
     published: p.published,
     translations: p.translations,
   }
@@ -140,7 +158,12 @@ export default function AdminPostsPage() {
                       <h2 className="truncate font-semibold text-white">
                         {ko?.title ?? post.translations[0]?.title ?? post.slug}
                       </h2>
-                      <Badge tone="neutral">{CATEGORY_LABEL[post.category]}</Badge>
+                      <Badge tone={post.kind === 'SNS' ? 'brand' : 'neutral'}>
+                        {KIND_LABEL[post.kind]}
+                      </Badge>
+                      {post.kind === 'ARTICLE' && (
+                        <Badge tone="neutral">{CATEGORY_LABEL[post.category]}</Badge>
+                      )}
                       <Badge tone={post.published ? 'success' : 'warning'}>
                         {post.published ? '공개' : '비공개'}
                       </Badge>
@@ -246,14 +269,40 @@ function PostForm({
     })
   }
 
-  const submit = async () => {
-    if (form.translations.length === 0) throw new Error('최소 한 언어의 제목과 본문을 입력해주세요.')
+  const isSns = form.kind === 'SNS'
 
-    for (const t of form.translations) {
-      if (!t.title.trim() || !t.body.trim()) {
-        throw new Error(
-          `${t.locale === 'KO' ? '한국어' : '일본어'}: 제목과 본문을 모두 입력하거나, 둘 다 비워주세요.`,
-        )
+  /** 종류를 바꾸면 카테고리/링크를 유효한 기본값으로 맞춥니다. */
+  const setKind = (kind: PostKind) => {
+    onChange({
+      form: {
+        ...form,
+        kind,
+        category: kind === 'SNS' ? 'ETC' : form.category === 'ETC' ? 'CREW' : form.category,
+      },
+    })
+  }
+
+  const submit = async () => {
+    if (!form.slug.trim()) {
+      // 한글 제목만 입력하면 slug 자동생성이 비어 서버가 400 을 냅니다. 먼저 잡아줍니다.
+      throw new Error('주소(slug)를 입력해주세요. 영문 소문자·숫자·하이픈만 가능합니다.')
+    }
+    if (form.translations.length === 0) throw new Error('최소 한 언어의 제목을 입력해주세요.')
+
+    if (isSns) {
+      if (!form.linkUrl.trim()) throw new Error('SNS 링크(유튜브 URL 등)를 입력해주세요.')
+      for (const t of form.translations) {
+        if (!t.title.trim()) {
+          throw new Error(`${t.locale === 'KO' ? '한국어' : '일본어'}: 제목을 입력해주세요.`)
+        }
+      }
+    } else {
+      for (const t of form.translations) {
+        if (!t.title.trim() || !t.body.trim()) {
+          throw new Error(
+            `${t.locale === 'KO' ? '한국어' : '일본어'}: 제목과 본문을 모두 입력하거나, 둘 다 비워주세요.`,
+          )
+        }
       }
     }
     if (id === null) await adminApi.createPost(form)
@@ -270,25 +319,60 @@ function PostForm({
       onSubmit={submit}
       wide
     >
+      {/* 종류 선택 — 라디오에 따라 아래 양식이 바뀝니다 */}
+      <Field label="종류">
+        <div className="mt-1 flex gap-2">
+          {(['ARTICLE', 'SNS'] as PostKind[]).map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => setKind(k)}
+              className={
+                'flex-1 rounded-lg border px-4 py-3 text-sm font-semibold transition-colors ' +
+                (form.kind === k
+                  ? 'border-brand-500 bg-brand-600/15 text-white'
+                  : 'border-ink-700 text-ink-300 hover:border-ink-500')
+              }
+            >
+              {KIND_LABEL[k]}
+              <span className="ml-1.5 text-[11px] font-normal text-ink-500">
+                {k === 'ARTICLE' ? '글·스토리' : '유튜브 링크'}
+              </span>
+            </button>
+          ))}
+        </div>
+      </Field>
+
       <div className="grid gap-3 sm:grid-cols-3">
-        <Field label="분류">
-          <select
-            className="field"
-            value={form.category}
-            onChange={(e) => set('category', e.target.value as PostCategory)}
-          >
-            {(Object.keys(CATEGORY_LABEL) as PostCategory[]).map((k) => (
-              <option key={k} value={k}>
-                {CATEGORY_LABEL[k]}
-              </option>
-            ))}
-          </select>
-        </Field>
+        {isSns ? (
+          <Field label="유튜브 URL" hint="영상 링크(https://…)">
+            <input
+              className="field text-xs"
+              value={form.linkUrl}
+              placeholder="https://youtu.be/..."
+              onChange={(e) => set('linkUrl', e.target.value)}
+            />
+          </Field>
+        ) : (
+          <Field label="분류">
+            <select
+              className="field"
+              value={form.category}
+              onChange={(e) => set('category', e.target.value as PostCategory)}
+            >
+              {SELECTABLE_CATEGORIES.map((k) => (
+                <option key={k} value={k}>
+                  {CATEGORY_LABEL[k]}
+                </option>
+              ))}
+            </select>
+          </Field>
+        )}
         <Field label="주소 (slug)" hint="영문 소문자·숫자·하이픈만">
           <input
             className="field font-mono text-xs"
             value={form.slug}
-            placeholder="crew-growth-01"
+            placeholder={isSns ? 'sns-osaka-vlog' : 'crew-growth-01'}
             onChange={(e) => set('slug', e.target.value)}
           />
         </Field>
@@ -307,7 +391,7 @@ function PostForm({
 
       <ImageUploader
         directory="post"
-        label="썸네일"
+        label={isSns ? '썸네일 (영상 대표 이미지)' : '썸네일'}
         value={previewUrl}
         onUploaded={(img) =>
           onChange({
@@ -368,23 +452,27 @@ function PostForm({
             />
           </Field>
 
-          <Field label="요약" hint="목록에 보이는 한두 줄">
-            <textarea
-              className="field"
-              rows={2}
-              value={current.excerpt ?? ''}
-              onChange={(e) => setTr(tab, 'excerpt', e.target.value)}
-            />
-          </Field>
+          {!isSns && (
+            <>
+              <Field label="요약" hint="목록에 보이는 한두 줄">
+                <textarea
+                  className="field"
+                  rows={2}
+                  value={current.excerpt ?? ''}
+                  onChange={(e) => setTr(tab, 'excerpt', e.target.value)}
+                />
+              </Field>
 
-          <Field label="본문">
-            <textarea
-              className="field font-mono text-xs leading-relaxed"
-              rows={12}
-              value={current.body}
-              onChange={(e) => setTr(tab, 'body', e.target.value)}
-            />
-          </Field>
+              <Field label="본문">
+                <textarea
+                  className="field font-mono text-xs leading-relaxed"
+                  rows={12}
+                  value={current.body}
+                  onChange={(e) => setTr(tab, 'body', e.target.value)}
+                />
+              </Field>
+            </>
+          )}
         </div>
       </div>
     </AdminModal>
