@@ -3,7 +3,6 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLocale, useLocalePath } from '@/hooks/useLocale'
 import { cn } from '@/lib/utils'
-import LogoMark from './Logo'
 import LanguageSwitcher from './LanguageSwitcher'
 
 const NAV = [
@@ -45,7 +44,11 @@ export default function Header() {
     >
       <div className="container-mh flex h-16 items-center justify-between gap-6 sm:h-20">
         <Link to={lp('/')} className="flex items-center gap-2.5 text-brand-500">
-          <LogoMark className="h-7 w-7 sm:h-8 sm:w-8" />
+          <img
+            src="/mh-logo-mark.png"
+            alt=""
+            className="h-7 w-7 object-contain sm:h-8 sm:w-8"
+          />
           <span className="font-display text-base tracking-tightest text-white sm:text-lg">
             MONSTER HOUSE
           </span>

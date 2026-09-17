@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLocalePath } from '@/hooks/useLocale'
-import LogoMark from './Logo'
 
 const MENU = [
   { key: 'shooting', path: '/shooting' },
@@ -39,7 +38,7 @@ export default function Footer() {
       <div className="container-mh grid gap-12 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
           <div className="flex items-center gap-2.5 text-brand-500">
-            <LogoMark className="h-8 w-8" />
+            <img src="/mh-logo-mark.png" alt="" className="h-8 w-8 object-contain" />
             <span className="font-display text-lg tracking-tightest text-white">
               MONSTER HOUSE
             </span>
