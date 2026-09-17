@@ -98,49 +98,6 @@ export default function AboutPage() {
             : '※ YouTube Data API v3 연동 후 실제 최신 영상으로 교체됩니다.'}
         </p>
       </Section>
-
-      {/* 오시는 길 */}
-      <Section className="border-t border-ink-800" eyebrow="LOCATION" title={t('about.locationTitle')}>
-        <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-          <div className="surface relative flex min-h-[320px] items-center justify-center overflow-hidden">
-            <div
-              className="absolute inset-0 opacity-20"
-              style={{
-                backgroundImage:
-                  'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)',
-                backgroundSize: '48px 48px',
-              }}
-            />
-            <div className="relative text-center">
-              <LogoMark className="mx-auto h-10 w-10 text-brand-700" />
-              <p className="mt-4 text-xs uppercase tracking-[0.2em] text-ink-600">
-                {t('about.mapNote')}
-              </p>
-            </div>
-          </div>
-
-          <dl className="surface space-y-6 p-7">
-            <div>
-              <dt className="text-[11px] uppercase tracking-[0.2em] text-ink-500">
-                {t('about.address')}
-              </dt>
-              <dd className="mt-2 text-sm text-ink-100">{t('about.addressValue')}</dd>
-            </div>
-            <div>
-              <dt className="text-[11px] uppercase tracking-[0.2em] text-ink-500">
-                {t('about.hours')}
-              </dt>
-              <dd className="mt-2 text-sm text-ink-100">{t('about.hoursValue')}</dd>
-            </div>
-            <div>
-              <dt className="text-[11px] uppercase tracking-[0.2em] text-ink-500">
-                {t('about.contact')}
-              </dt>
-              <dd className="mt-2 text-sm text-ink-100">contact@monsterhouse.example</dd>
-            </div>
-          </dl>
-        </div>
-      </Section>
     </>
   )
 }
