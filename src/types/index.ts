@@ -242,7 +242,15 @@ export interface AdminProduct {
   bookable: boolean
   noteKo: string | null
   noteJa: string | null
-  options: { id: number; name: string; price: number; maxQuantity: number }[]
+  options: {
+    id: number
+    nameKo: string
+    nameJa: string | null
+    price: number
+    maxQuantity: number
+    sortOrder: number
+    active: boolean
+  }[]
   /** 일본어 이름이 비어 있으면 false — 목록에서 "번역 필요" 배지를 띄웁니다 */
   translated: boolean
 }

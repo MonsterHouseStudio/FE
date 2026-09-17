@@ -181,7 +181,7 @@ export default function AdminProductsPage() {
                     {product.options.length === 0
                       ? '없음'
                       : product.options
-                          .map((o) => `${o.name} (+${formatPrice(o.price, 'ko')})`)
+                          .map((o) => `${o.nameKo} (+${formatPrice(o.price, 'ko')})`)
                           .join(' · ')}
                     <button
                       type="button"
@@ -445,16 +445,15 @@ function OptionManager({
 
   const startEdit = (o: AdminProduct['options'][number]) => {
     setEditingId(o.id)
-    // 응답에는 name(단일)만 있고 nameKo/nameJa 가 분리돼 오지 않습니다.
-    // 한국어 칸에 채우고 일본어는 비워둡니다 — 그대로 저장하면 일본어가 지워지므로
-    // 아래 안내 문구로 알립니다.
+    // 서버가 옵션의 한국어·일본어 이름과 정렬·활성 값을 그대로 내려주므로
+    // 편집 화면에 원본 그대로 채웁니다(일본어가 비면 빈 칸).
     setForm({
-      nameKo: o.name,
-      nameJa: '',
+      nameKo: o.nameKo,
+      nameJa: o.nameJa ?? '',
       price: o.price,
       maxQuantity: o.maxQuantity,
-      sortOrder: 0,
-      active: true,
+      sortOrder: o.sortOrder,
+      active: o.active,
     })
   }
 
@@ -512,10 +511,11 @@ function OptionManager({
             {product.options.map((o) => (
               <li key={o.id} className="flex items-center justify-between gap-3 px-4 py-3">
                 <div className="min-w-0">
-                  <span className="text-sm text-white">{o.name}</span>
+                  <span className="text-sm text-white">{o.nameKo}</span>
                   <span className="ml-2 text-xs text-ink-500">
                     +{formatPrice(o.price, 'ko')} · 최대 {o.maxQuantity}개
                   </span>
+                  <span className="ml-2 text-xs text-ink-600">JA: {o.nameJa || '—'}</span>
                 </div>
                 <div className="flex shrink-0 gap-2">
                   <button
@@ -557,13 +557,6 @@ function OptionManager({
             </button>
           )}
         </div>
-
-        {editingId !== null && (
-          <p className="mb-3 rounded-lg border border-amber-500/25 bg-amber-500/5 px-3 py-2 text-[11px] leading-relaxed text-amber-200/80">
-            서버가 옵션의 일본어 이름을 따로 내려주지 않아 비워둔 상태입니다.
-            이대로 저장하면 일본어 이름이 지워집니다. 필요하면 다시 입력해주세요.
-          </p>
-        )}
 
         <BilingualField
           label="옵션명"
