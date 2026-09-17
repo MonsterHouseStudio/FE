@@ -189,7 +189,7 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
             role="group"
             aria-roledescription="slide"
             aria-label={t('home.heroSlideOf', { n: i + 1, total: count })}
-            className="hero-screen relative flex w-full shrink-0 basis-full snap-center snap-always items-center overflow-hidden"
+            className="hero-screen relative flex w-full shrink-0 basis-full snap-center snap-always items-end overflow-hidden"
           >
             {banner ? (
               <>
@@ -246,8 +246,8 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
               </>
             )}
 
-            {/* pt 는 헤더 높이 — 글이 헤더 밑에 깔리지 않게, pb 는 점·스크롤 표시 자리 */}
-            <div className="container-mh relative w-full pb-32 pt-16 sm:pt-20">
+            {/* 하단 정렬(items-end). pb 로 점·스크롤 표시 위로 띄우고, pt 는 헤더에 안 깔리게 최소 확보 */}
+            <div className="container-mh relative w-full pb-28 pt-24 sm:pb-36 sm:pt-28">
               <p className="eyebrow">{t('home.heroEyebrow')}</p>
               <h1 className="heading-xl mt-6 max-w-3xl whitespace-pre-line text-white">
                 {banner?.headline || t('home.heroTitle')}
