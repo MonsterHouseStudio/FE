@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Actions 화면에서 "Run workflow" 로 수동 배포도 가능하게.
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -99,7 +101,10 @@ jobs:
     needs: [build, e2e, docker]
     # main 에 push 되고, 저장소 변수 DEPLOY=true 일 때만 실제 배포합니다.
     # (변수를 켜기 전까지 이 잡은 건너뜁니다 — 시크릿 준비 전 빨간 실패 방지)
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.DEPLOY == 'true'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      vars.DEPLOY == 'true'
     concurrency:
       group: deploy-prod
       cancel-in-progress: false
