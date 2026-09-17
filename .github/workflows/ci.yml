@@ -119,4 +119,4 @@ jobs:
           script_stop: true
           script: |
             cd /opt/monsterhouse/BE/deploy
-            ./deploy.sh
+            bash deploy.sh
