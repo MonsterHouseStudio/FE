@@ -4,7 +4,7 @@ import { test, expect, type Page } from '@playwright/test'
  * 예약 완료 → 입금 안내 박스가 뜨는지 (계좌이체 정책).
  *
  * 목 모드로 예약을 끝까지 태워 완료 화면에 도달한 뒤,
- * 계좌·입금 금액·자리표시자 경고가 실제로 렌더되는지 확인합니다.
+ * 실제 계좌·입금 금액이 렌더되고 자리표시자 경고가 사라졌는지 확인합니다.
  * 금액 계산 자체(예약금 50% / 2주 이내 전액)의 정확성은 payment.ts 의
  * computePaymentPlan 단위 성격 검증으로 덮고, 여기서는 화면 렌더를 봅니다.
  *
@@ -58,9 +58,9 @@ test('예약 완료 화면에 입금 안내(계좌이체)가 뜬다', async ({ p
   // 입금 안내 박스
   await expect(page.getByText('입금 안내')).toBeVisible()
 
-  // 계좌(자리표시자) — 실제 계좌로 교체 전에는 경고가 보여야 한다
-  await expect(page.getByText('실제 계좌로 교체')).toBeVisible()
-  await expect(page.getByText('000-0000-000000')).toBeVisible()
+  // 실제 계좌가 노출되어야 하고, 자리표시자 경고는 없어야 한다
+  await expect(page.getByText('실제 계좌로 교체')).toHaveCount(0)
+  await expect(page.getByText('110-221-942670')).toBeVisible()
 
   // 지금 입금할 금액 + 예약금/전액 라벨 중 하나
   await expect(page.getByText('지금 입금할 금액')).toBeVisible()
