@@ -13,6 +13,11 @@ import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
+  // CI 러너(2코어)에서 firefox 를 여러 워커로 동시에 돌리면 간헐적으로 브라우저가
+  // 뻗습니다("Target page has been closed"). CI 에서는 워커 1개로 직렬 실행하고,
+  // 그래도 남는 간헐 실패는 재시도로 흡수합니다. 로컬은 병렬·무재시도 그대로.
+  workers: process.env.CI ? 1 : undefined,
+  retries: process.env.CI ? 2 : 0,
   reporter: [['list']],
   // 목 모드로 띄웁니다. 이 테스트가 확인하려는 것은 렌더링·레이아웃이지 백엔드가 아닙니다.
   webServer: {
