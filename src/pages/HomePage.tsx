@@ -8,6 +8,7 @@ import { ButtonLink } from '@/components/ui/Button'
 import { Badge, Photo, Section, Spinner } from '@/components/ui/primitives'
 import LogoMark from '@/components/layout/Logo'
 import HeroCarousel from '@/components/home/HeroCarousel'
+import HomeStats from '@/components/home/HomeStats'
 
 export default function HomePage() {
   const { t } = useTranslation()
@@ -45,26 +46,8 @@ export default function HomePage() {
       {/* ============ HERO ============ */}
       <HeroCarousel banners={banners ?? []} />
 
-      {/* 통계 스트립 */}
-      <section className="border-y border-ink-800 bg-ink-950">
-        <div className="container-mh grid grid-cols-2 divide-x divide-ink-800 lg:grid-cols-4">
-          {[
-            { value: '480+', label: t('home.statsShoots') },
-            { value: '120+', label: t('home.statsAthletes') },
-            { value: '4', label: t('home.statsYears') },
-            { value: 'KR · JP', label: t('home.statsCountries') },
-          ].map((stat, i) => (
-            <div key={i} className="px-4 py-7 text-center sm:py-9">
-              <div className="font-display text-2xl tracking-tightest text-white sm:text-4xl">
-                {stat.value}
-              </div>
-              <div className="mt-2 text-[10px] uppercase tracking-[0.2em] text-ink-500 sm:text-xs">
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* 숫자로 보는 — 풀스크린 스크롤 패널 (관리자 편집) */}
+      <HomeStats />
 
       {/* ============ SERVICES ============ */}
       <Section

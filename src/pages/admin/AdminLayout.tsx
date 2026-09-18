@@ -9,6 +9,7 @@ import LogoMark from '@/components/layout/Logo'
 const MENU = [
   { key: 'dashboard', path: '/admin', end: true, icon: '▤' },
   { key: 'banners', path: '/admin/banners', end: false, icon: '▭' },
+  { key: 'homeStats', path: '/admin/home-stats', end: false, icon: '＃' },
   { key: 'products', path: '/admin/products', end: false, icon: '◎' },
   { key: 'bookings', path: '/admin/bookings', end: false, icon: '▦' },
   { key: 'calendar', path: '/admin/calendar', end: false, icon: '▣' },

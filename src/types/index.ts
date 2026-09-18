@@ -480,6 +480,45 @@ export interface BannerSavePayload {
   sortOrder: number
 }
 
+/** 홈 "숫자로 보는" 풀스크린 패널. valueNumber 가 있으면 카운트업, 없으면 valueText. */
+export interface HomeStat {
+  id: number
+  valueNumber: number | null
+  suffix: string
+  valueText: string | null
+  label: string
+  description: string | null
+  photoUrl: string | null
+}
+
+export interface AdminHomeStat {
+  id: number
+  valueNumber: number | null
+  suffix: string
+  valueText: string | null
+  labelKo: string | null
+  labelJa: string | null
+  descKo: string | null
+  descJa: string | null
+  photoKey: string | null
+  photoUrl: string | null
+  active: boolean
+  sortOrder: number
+}
+
+export interface HomeStatSavePayload {
+  valueNumber: number | null
+  suffix: string
+  valueText: string
+  labelKo: string
+  labelJa: string
+  descKo: string
+  descJa: string
+  photoKey: string
+  active: boolean
+  sortOrder: number
+}
+
 export type Weekday =
   | 'MONDAY'
   | 'TUESDAY'

@@ -32,6 +32,7 @@ const AdminSchedulePage = lazy(() => import('@/pages/admin/AdminSchedulePage'))
 const AdminGalleryPage = lazy(() => import('@/pages/admin/AdminGalleryPage'))
 const AdminPostsPage = lazy(() => import('@/pages/admin/AdminPostsPage'))
 const AdminBannersPage = lazy(() => import('@/pages/admin/AdminBannersPage'))
+const AdminHomeStatsPage = lazy(() => import('@/pages/admin/AdminHomeStatsPage'))
 const AdminUsersPage = lazy(() => import('@/pages/admin/AdminUsersPage'))
 const AdminInquiriesPage = lazy(() => import('@/pages/admin/AdminInquiriesPage'))
 const AdminCalendarPage = lazy(() => import('@/pages/admin/AdminCalendarPage'))
@@ -111,6 +112,7 @@ export default function App() {
             <Route path="gallery" element={<AdminGalleryPage />} />
             <Route path="posts" element={<AdminPostsPage />} />
             <Route path="banners" element={<AdminBannersPage />} />
+            <Route path="home-stats" element={<AdminHomeStatsPage />} />
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="inquiries" element={<AdminInquiriesPage />} />
             <Route path="calendar" element={<AdminCalendarPage />} />

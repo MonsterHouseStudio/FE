@@ -4,9 +4,12 @@ import type {
   AdminBooking,
   AdminCompetition,
   AdminGalleryItem,
+  AdminHomeStat,
   AdminInquiry,
   AdminPost,
   AdminProduct,
+  HomeStat,
+  HomeStatSavePayload,
   AdminUser,
   AdminUserCreatePayload,
   ApiResponse,
@@ -288,6 +291,11 @@ export const api = {
     return request<Banner[]>('/banners', locale)
   },
 
+  async getHomeStats(locale: Locale): Promise<HomeStat[]> {
+    if (USE_MOCK) return []
+    return request<HomeStat[]>('/home-stats', locale)
+  },
+
   async getGallery(locale: Locale): Promise<GalleryItem[]> {
     if (!USE_MOCK) return request<GalleryItem[]>('/gallery', locale)
     await delay(200)
@@ -460,7 +468,7 @@ export const adminApi = {
    *   'application/json' 을 덮어써 버리면 서버가 본문을 파싱하지 못합니다.
    *   FormData 를 넘기면 브라우저가 boundary 를 포함해 알아서 채웁니다.
    */
-  uploadImage: (file: File, directory: 'gallery' | 'post' | 'product' | 'banner') => {
+  uploadImage: (file: File, directory: 'gallery' | 'post' | 'product' | 'banner' | 'home-stat') => {
     const form = new FormData()
     form.append('file', file)
     return adminRequest<UploadedImage>(`/admin/uploads/images${query({ directory })}`, {
@@ -586,6 +594,28 @@ export const adminApi = {
     }),
 
   deleteBanner: (id: number) => adminRequest<void>(`/admin/banners/${id}`, { method: 'DELETE' }),
+
+  // ----- 홈 통계(숫자로 보는) -----
+  getHomeStats: () => adminRequest<AdminHomeStat[]>('/admin/home-stats'),
+
+  createHomeStat: (payload: HomeStatSavePayload) =>
+    adminRequest<AdminHomeStat>('/admin/home-stats', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  updateHomeStat: (id: number, payload: HomeStatSavePayload) =>
+    adminRequest<AdminHomeStat>(`/admin/home-stats/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+
+  setHomeStatActive: (id: number, active: boolean) =>
+    adminRequest<AdminHomeStat>(`/admin/home-stats/${id}/active${query({ active: String(active) })}`, {
+      method: 'PATCH',
+    }),
+
+  deleteHomeStat: (id: number) => adminRequest<void>(`/admin/home-stats/${id}`, { method: 'DELETE' }),
 
   /** 배너 배경 영상. MP4 만 받습니다(서버가 ftyp 매직바이트까지 검사). */
   uploadVideo: (file: File) => {
