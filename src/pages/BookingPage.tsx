@@ -193,7 +193,7 @@ export default function BookingPage() {
                           productId === p.id && 'border-brand-600',
                         )}
                       >
-                        <Photo seed={p.id * 4} className="h-20 w-20 shrink-0 rounded-lg sm:h-24 sm:w-24" />
+                        <Photo src={p.imageUrl} seed={p.id * 4} alt={p.name} className="h-20 w-20 shrink-0 rounded-lg sm:h-24 sm:w-24" />
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
                             <h3 className="font-display text-lg tracking-tightest text-white">

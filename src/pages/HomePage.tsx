@@ -83,7 +83,7 @@ export default function HomePage() {
                 >
                   {/* 사진 하단을 유리 톤으로 자연스럽게 잇는 붉은 그라데이션 오버레이 */}
                   <div className="relative">
-                    <Photo seed={product.id * 4} className="aspect-[4/3] w-full" />
+                    <Photo src={product.imageUrl} seed={product.id * 4} alt={product.name} className="aspect-[4/3] w-full" />
                     <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-950/50 via-transparent to-transparent" />
                   </div>
                   <div className="flex flex-1 flex-col p-4 sm:p-6">
