@@ -15,7 +15,15 @@ export function ImageUploader({
   onUploaded,
   label = '이미지',
 }: {
-  directory: 'gallery' | 'post' | 'product' | 'banner' | 'home-stat'
+  directory:
+    | 'gallery'
+    | 'post'
+    | 'product'
+    | 'banner'
+    | 'home-stat'
+    | 'crew'
+    | 'about-video'
+    | 'about-intro'
   /** 현재 이미지 미리보기 URL (없으면 빈 상자) */
   value?: string | null
   onUploaded: (image: UploadedImage) => void

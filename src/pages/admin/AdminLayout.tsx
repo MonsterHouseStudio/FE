@@ -16,6 +16,7 @@ const MENU = [
   { key: 'schedule', path: '/admin/schedule', end: false, icon: '◇' },
   { key: 'gallery', path: '/admin/gallery', end: false, icon: '▨' },
   { key: 'posts', path: '/admin/posts', end: false, icon: '✎' },
+  { key: 'about', path: '/admin/about', end: false, icon: '❋' },
   { key: 'inquiries', path: '/admin/inquiries', end: false, icon: '✉' },
   { key: 'users', path: '/admin/users', end: false, icon: '⚿' },
 ] as const

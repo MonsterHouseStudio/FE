@@ -10,7 +10,7 @@ const reduceMotion = () =>
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 /** 대상 숫자까지 easeOutCubic 으로 카운트업. active 가 true 가 될 때 시작. */
-function useCountUp(target: number, active: boolean, duration = 1600) {
+function useCountUp(target: number, active: boolean, duration = 1500) {
   const [value, setValue] = useState(0)
   useEffect(() => {
     if (!active) return
@@ -32,91 +32,31 @@ function useCountUp(target: number, active: boolean, duration = 1600) {
   return value
 }
 
-function StatPanel({ stat, index, total }: { stat: HomeStat; index: number; total: number }) {
-  const panelRef = useRef<HTMLDivElement>(null)
-  const contentRef = useRef<HTMLDivElement>(null)
-  const photoRef = useRef<HTMLImageElement>(null)
-  const [entered, setEntered] = useState(false)
-
+/** 한 통계의 중앙 콘텐츠(스크롤 진행도에 따라 크로스페이드로 나타남). */
+function StatContent({
+  stat,
+  index,
+  total,
+  active,
+  innerRef,
+}: {
+  stat: HomeStat
+  index: number
+  total: number
+  active: boolean
+  innerRef: (el: HTMLDivElement | null) => void
+}) {
   const isNumeric = stat.valueNumber != null
-  const count = useCountUp(stat.valueNumber ?? 0, entered && isNumeric)
+  const count = useCountUp(stat.valueNumber ?? 0, active && isNumeric)
   const bigValue = isNumeric ? `${count.toLocaleString()}${stat.suffix ?? ''}` : stat.valueText
-
-  // 스크롤에 연동해 패럴랙스 + 문구 페이드/슬라이드. rAF 로 throttle.
-  useEffect(() => {
-    const panel = panelRef.current
-    if (!panel) return
-    if (reduceMotion()) {
-      setEntered(true)
-      return
-    }
-    let raf = 0
-    const update = () => {
-      raf = 0
-      const rect = panel.getBoundingClientRect()
-      const vh = window.innerHeight || 1
-      // 패널 중앙이 화면 중앙에 오면 0, 위/아래로 갈수록 ±1
-      const progress = Math.max(-1, Math.min(1, (rect.top + rect.height / 2 - vh / 2) / vh))
-      const abs = Math.abs(progress)
-
-      if (contentRef.current) {
-        const op = Math.max(0, 1 - abs * 1.35)
-        contentRef.current.style.opacity = String(op)
-        contentRef.current.style.transform = `translateY(${progress * -46}px)`
-      }
-      if (photoRef.current) {
-        // 사진은 스크롤 반대로 천천히 → 깊이감(패럴랙스)
-        photoRef.current.style.transform = `translateY(${progress * 64}px) scale(1.18)`
-      }
-      // 화면 중앙 근처(45% 이내)에 들어오면 카운트업 시작
-      if (!entered && abs < 0.45) setEntered(true)
-    }
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update)
-    }
-    update()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-      if (raf) cancelAnimationFrame(raf)
-    }
-  }, [entered])
 
   return (
     <div
-      ref={panelRef}
-      className="relative flex min-h-[90vh] w-full items-center justify-center overflow-hidden"
+      ref={innerRef}
+      className="absolute inset-0 flex items-center justify-center will-change-[opacity,transform]"
+      style={{ opacity: 0 }}
     >
-      {/* 배경: 사진(패럴랙스) + 어두운 덮개, 없으면 브랜드 그라디언트 */}
-      {stat.photoUrl ? (
-        <>
-          <img
-            ref={photoRef}
-            src={stat.photoUrl}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover will-change-transform"
-            style={{ transform: 'scale(1.18)' }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/55 to-black/85" />
-        </>
-      ) : (
-        <>
-          <div className="absolute inset-0 bg-gradient-to-br from-brand-950 via-ink-950 to-black" />
-          <div
-            className="absolute inset-0 opacity-[0.06]"
-            style={{
-              backgroundImage:
-                'repeating-linear-gradient(120deg, #fff 0 1px, transparent 1px 16px)',
-            }}
-          />
-        </>
-      )}
-
-      {/* 내용 (스크롤에 연동해 페이드/슬라이드) */}
-      <div ref={contentRef} className="container-mh relative text-center will-change-transform">
+      <div className="container-mh text-center">
         <div className="font-poster text-sm tracking-[0.4em] text-brand-400">
           {String(index + 1).padStart(2, '0')}{' '}
           <span className="text-ink-600">/ {String(total).padStart(2, '0')}</span>
@@ -125,7 +65,7 @@ function StatPanel({ stat, index, total }: { stat: HomeStat; index: number; tota
         <div
           className={cn(
             'mt-6 font-display font-black leading-none tracking-tightest text-white',
-            'text-[19vw] sm:text-[13vw] lg:text-[150px]',
+            'text-[20vw] sm:text-[14vw] lg:text-[160px]',
           )}
         >
           {bigValue}
@@ -147,7 +87,157 @@ function StatPanel({ stat, index, total }: { stat: HomeStat; index: number; tota
   )
 }
 
-/** 홈 "숫자로 보는" — 스크롤에 연동되는 풀스크린 통계 패널. 관리자에서 값·사진 편집. */
+/** 스크롤에 고정(pin)되는 풀스크린 통계 섹션. 스크롤 진행도가 활성 통계를 바꾼다. */
+function ScrollStats({ stats, title }: { stats: HomeStat[]; title: string }) {
+  const wrapRef = useRef<HTMLElement>(null)
+  const contentRefs = useRef<(HTMLDivElement | null)[]>([])
+  const photoRefs = useRef<(HTMLDivElement | null)[]>([])
+  const railRefs = useRef<(HTMLSpanElement | null)[]>([])
+  // 카운트업 트리거용 — 한 번이라도 활성이 된 통계는 계속 활성으로 간주
+  const [seen, setSeen] = useState<boolean[]>(() => stats.map(() => false))
+  const seenRef = useRef(seen)
+  seenRef.current = seen
+
+  const N = stats.length
+
+  useEffect(() => {
+    const wrap = wrapRef.current
+    if (!wrap) return
+
+    // 모션 최소화: 첫 번째만 보이게 고정하고 카운트업 즉시 완료
+    if (reduceMotion()) {
+      contentRefs.current.forEach((el, i) => {
+        if (el) el.style.opacity = i === 0 ? '1' : '0'
+      })
+      setSeen(stats.map(() => true))
+      return
+    }
+
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const rect = wrap.getBoundingClientRect()
+      const vh = window.innerHeight || 1
+      const scrollable = wrap.offsetHeight - vh
+      // 섹션이 화면에 고정되는 구간의 진행도 0..1
+      const progress = Math.max(0, Math.min(1, -rect.top / (scrollable || 1)))
+      const activeFloat = progress * N // 0..N
+
+      const nextSeen = seenRef.current.slice()
+      let changed = false
+
+      for (let i = 0; i < N; i++) {
+        // 각 통계의 구간 중앙에서의 거리(구간 단위)
+        const dist = activeFloat - (i + 0.5)
+        const opacity = Math.max(0, 1 - Math.abs(dist) * 1.7)
+        const content = contentRefs.current[i]
+        if (content) {
+          content.style.opacity = String(opacity)
+          content.style.transform = `translateY(${dist * 44}px)`
+          content.style.pointerEvents = opacity > 0.5 ? 'auto' : 'none'
+        }
+        const photo = photoRefs.current[i]
+        if (photo) {
+          photo.style.opacity = String(Math.max(0, 1 - Math.abs(dist) * 1.35))
+          photo.style.transform = `translateY(${dist * -26}px) scale(1.12)`
+        }
+        const rail = railRefs.current[i]
+        if (rail) {
+          const near = Math.abs(dist) < 0.5
+          rail.style.color = near ? '#f75d68' : '#4a4a55'
+          rail.style.opacity = near ? '1' : '0.5'
+        }
+        if (Math.abs(dist) < 0.55 && !nextSeen[i]) {
+          nextSeen[i] = true
+          changed = true
+        }
+      }
+      if (changed) setSeen(nextSeen)
+    }
+
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [N])
+
+  return (
+    <section
+      ref={wrapRef}
+      className="relative bg-ink-950"
+      style={{ height: `${N * 100}vh` }}
+      aria-label={title}
+    >
+      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
+        {/* 배경 사진들(크로스페이드 + 패럴랙스) */}
+        <div className="absolute inset-0">
+          {stats.map((stat, i) => (
+            <div
+              key={`bg-${stat.id}`}
+              ref={(el) => (photoRefs.current[i] = el)}
+              className="absolute inset-0 will-change-[opacity,transform]"
+              style={{ opacity: i === 0 ? 1 : 0 }}
+            >
+              {stat.photoUrl ? (
+                <img src={stat.photoUrl} alt="" aria-hidden className="h-full w-full object-cover" />
+              ) : (
+                <div className="h-full w-full bg-gradient-to-br from-brand-950 via-ink-950 to-black" />
+              )}
+            </div>
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/55 to-black/85" />
+        </div>
+
+        {/* 상단 고정 라벨 */}
+        <div className="container-mh absolute inset-x-0 top-8 sm:top-12">
+          <p className="eyebrow">BY THE NUMBERS</p>
+          <h2 className="heading-md mt-3 text-white">{title}</h2>
+        </div>
+
+        {/* 좌측 인덱스 레일 */}
+        <div className="absolute left-5 top-1/2 hidden -translate-y-1/2 flex-col gap-3 sm:flex">
+          {stats.map((stat, i) => (
+            <span
+              key={`rail-${stat.id}`}
+              ref={(el) => (railRefs.current[i] = el)}
+              className="font-poster text-xs tracking-[0.3em] transition-colors"
+              style={{ color: i === 0 ? '#f75d68' : '#4a4a55' }}
+            >
+              {String(i + 1).padStart(2, '0')}
+            </span>
+          ))}
+        </div>
+
+        {/* 중앙 콘텐츠들(크로스페이드) */}
+        {stats.map((stat, i) => (
+          <StatContent
+            key={stat.id}
+            stat={stat}
+            index={i}
+            total={N}
+            active={seen[i]}
+            innerRef={(el) => (contentRefs.current[i] = el)}
+          />
+        ))}
+
+        {/* 스크롤 유도 힌트 */}
+        <div className="absolute inset-x-0 bottom-8 text-center text-[10px] uppercase tracking-[0.4em] text-ink-500">
+          SCROLL
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/** 홈 "숫자로 보는" — 스크롤에 고정되는 풀스크린 통계. 관리자에서 값·사진 편집. */
 export default function HomeStats() {
   const locale = useLocale()
   const { data } = useQuery({
@@ -158,17 +248,6 @@ export default function HomeStats() {
   const stats = data ?? []
   if (stats.length === 0) return null
 
-  return (
-    <section className="border-y border-ink-800 bg-ink-950">
-      <div className="container-mh pt-16 text-center sm:pt-20">
-        <p className="eyebrow">BY THE NUMBERS</p>
-        <h2 className="heading-lg mt-4 text-white">
-          {locale === 'ja' ? '数字で見る MONSTER HOUSE' : '숫자로 보는 MONSTER HOUSE'}
-        </h2>
-      </div>
-      {stats.map((stat, i) => (
-        <StatPanel key={stat.id} stat={stat} index={i} total={stats.length} />
-      ))}
-    </section>
-  )
+  const title = locale === 'ja' ? '数字で見る MONSTER HOUSE' : '숫자로 보는 MONSTER HOUSE'
+  return <ScrollStats stats={stats} title={title} />
 }

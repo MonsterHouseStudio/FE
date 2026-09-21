@@ -336,7 +336,8 @@
     "posts": "미디어 글",
     "users": "관리자 계정",
     "homeStats": "홈 통계",
-    "banners": "홈 배너"
+    "banners": "홈 배너",
+    "about": "소개 관리"
   },
   "days": {
     "mon": "월",

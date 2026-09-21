@@ -1,13 +1,20 @@
 import type { Locale } from '@/i18n'
 import type {
+  AboutPage,
+  AdminAboutIntro,
+  AdminAboutVideo,
+  AboutIntroSavePayload,
+  AboutVideoSavePayload,
   AdminBanner,
   AdminBooking,
   AdminCompetition,
+  AdminCrew,
   AdminGalleryItem,
   AdminHomeStat,
   AdminInquiry,
   AdminPost,
   AdminProduct,
+  CrewSavePayload,
   HomeStat,
   HomeStatSavePayload,
   AdminUser,
@@ -296,6 +303,10 @@ export const api = {
     return request<HomeStat[]>('/home-stats', locale)
   },
 
+  async getAbout(locale: Locale): Promise<AboutPage> {
+    return request<AboutPage>('/about', locale)
+  },
+
   async getGallery(locale: Locale): Promise<GalleryItem[]> {
     if (!USE_MOCK) return request<GalleryItem[]>('/gallery', locale)
     await delay(200)
@@ -468,7 +479,18 @@ export const adminApi = {
    *   'application/json' 을 덮어써 버리면 서버가 본문을 파싱하지 못합니다.
    *   FormData 를 넘기면 브라우저가 boundary 를 포함해 알아서 채웁니다.
    */
-  uploadImage: (file: File, directory: 'gallery' | 'post' | 'product' | 'banner' | 'home-stat') => {
+  uploadImage: (
+    file: File,
+    directory:
+      | 'gallery'
+      | 'post'
+      | 'product'
+      | 'banner'
+      | 'home-stat'
+      | 'crew'
+      | 'about-video'
+      | 'about-intro',
+  ) => {
     const form = new FormData()
     form.append('file', file)
     return adminRequest<UploadedImage>(`/admin/uploads/images${query({ directory })}`, {
@@ -616,6 +638,59 @@ export const adminApi = {
     }),
 
   deleteHomeStat: (id: number) => adminRequest<void>(`/admin/home-stats/${id}`, { method: 'DELETE' }),
+
+  // ----- 소개 인트로(메인 배너, 싱글턴) -----
+  getAboutIntro: () => adminRequest<AdminAboutIntro>('/admin/about-intro'),
+
+  saveAboutIntro: (payload: AboutIntroSavePayload) =>
+    adminRequest<AdminAboutIntro>('/admin/about-intro', {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+
+  // ----- 크루 -----
+  getCrew: () => adminRequest<AdminCrew[]>('/admin/crew'),
+
+  createCrew: (payload: CrewSavePayload) =>
+    adminRequest<AdminCrew>('/admin/crew', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  updateCrew: (id: number, payload: CrewSavePayload) =>
+    adminRequest<AdminCrew>(`/admin/crew/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+
+  setCrewActive: (id: number, active: boolean) =>
+    adminRequest<AdminCrew>(`/admin/crew/${id}/active${query({ active: String(active) })}`, {
+      method: 'PATCH',
+    }),
+
+  deleteCrew: (id: number) => adminRequest<void>(`/admin/crew/${id}`, { method: 'DELETE' }),
+
+  // ----- 소개 최신 영상 -----
+  getAboutVideos: () => adminRequest<AdminAboutVideo[]>('/admin/about-videos'),
+
+  createAboutVideo: (payload: AboutVideoSavePayload) =>
+    adminRequest<AdminAboutVideo>('/admin/about-videos', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  updateAboutVideo: (id: number, payload: AboutVideoSavePayload) =>
+    adminRequest<AdminAboutVideo>(`/admin/about-videos/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+
+  setAboutVideoActive: (id: number, active: boolean) =>
+    adminRequest<AdminAboutVideo>(`/admin/about-videos/${id}/active${query({ active: String(active) })}`, {
+      method: 'PATCH',
+    }),
+
+  deleteAboutVideo: (id: number) => adminRequest<void>(`/admin/about-videos/${id}`, { method: 'DELETE' }),
 
   /** 배너 배경 영상. MP4 만 받습니다(서버가 ftyp 매직바이트까지 검사). */
   uploadVideo: (file: File) => {

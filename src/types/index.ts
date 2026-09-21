@@ -519,6 +519,110 @@ export interface HomeStatSavePayload {
   sortOrder: number
 }
 
+/* ===================== 소개 페이지 (About) ===================== */
+
+/** 소개 인트로(메인 배너) — 공개용. */
+export interface AboutIntro {
+  title: string | null
+  description: string | null
+  photo1Url: string | null
+  photo2Url: string | null
+  photo3Url: string | null
+}
+
+/** 크루 구성원 — 공개용. */
+export interface Crew {
+  id: number
+  name: string
+  role: string
+  bio: string
+  photoUrl: string | null
+}
+
+/** 최신 영상 — 공개용. */
+export interface AboutVideo {
+  id: number
+  youtubeUrl: string
+  title: string
+  thumbnailUrl: string | null
+}
+
+/** 소개 페이지 전체 묶음. */
+export interface AboutPage {
+  intro: AboutIntro
+  crew: Crew[]
+  videos: AboutVideo[]
+}
+
+export interface AdminAboutIntro {
+  titleKo: string | null
+  titleJa: string | null
+  descKo: string | null
+  descJa: string | null
+  photo1Key: string | null
+  photo1Url: string | null
+  photo2Key: string | null
+  photo2Url: string | null
+  photo3Key: string | null
+  photo3Url: string | null
+}
+
+export interface AboutIntroSavePayload {
+  titleKo: string
+  titleJa: string
+  descKo: string
+  descJa: string
+  photo1Key: string
+  photo2Key: string
+  photo3Key: string
+}
+
+export interface AdminCrew {
+  id: number
+  nameKo: string | null
+  nameJa: string | null
+  roleKo: string | null
+  roleJa: string | null
+  bioKo: string | null
+  bioJa: string | null
+  photoKey: string | null
+  photoUrl: string | null
+  active: boolean
+  sortOrder: number
+}
+
+export interface CrewSavePayload {
+  nameKo: string
+  nameJa: string
+  roleKo: string
+  roleJa: string
+  bioKo: string
+  bioJa: string
+  photoKey: string
+  active: boolean
+  sortOrder: number
+}
+
+export interface AdminAboutVideo {
+  id: number
+  youtubeUrl: string
+  titleKo: string | null
+  titleJa: string | null
+  thumbnailKey: string | null
+  thumbnailUrl: string | null
+  active: boolean
+  sortOrder: number
+}
+
+export interface AboutVideoSavePayload {
+  youtubeUrl: string
+  titleKo: string
+  titleJa: string
+  thumbnailKey: string
+  active: boolean
+  sortOrder: number
+}
+
 export type Weekday =
   | 'MONDAY'
   | 'TUESDAY'

@@ -336,7 +336,8 @@
     "posts": "記事管理",
     "users": "管理者アカウント",
     "homeStats": "ホーム統計",
-    "banners": "ホームバナー"
+    "banners": "ホームバナー",
+    "about": "紹介ページ管理"
   },
   "days": {
     "mon": "月",
