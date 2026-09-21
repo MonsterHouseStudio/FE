@@ -142,7 +142,15 @@ function ProductCard({
   return (
     <article className="glass-red grid lg:grid-cols-[minmax(0,360px)_1fr]">
       <div className="relative">
-        <Photo seed={product.id * 4} className="aspect-[4/3] h-full w-full lg:aspect-auto" />
+        {product.imageUrl ? (
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            className="aspect-[4/3] h-full w-full object-cover lg:aspect-auto"
+          />
+        ) : (
+          <Photo seed={product.id * 4} className="aspect-[4/3] h-full w-full lg:aspect-auto" />
+        )}
         {/* 사진을 유리 톤과 잇는 붉은 그라데이션 (세로/가로 배치 모두 자연스럽게) */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-950/50 via-transparent to-transparent lg:bg-gradient-to-r" />
       </div>

@@ -26,6 +26,8 @@ export interface Product {
   bookable: boolean
   /** "* 사진촬영 별도" 처럼 가격 옆에 붙는 단서 */
   note?: string | null
+  /** 상품 대표 이미지 URL (없으면 null) */
+  imageUrl?: string | null
   /** 화면 표시용 — "포함 사항" 목록 */
   includes: string[]
   options?: ProductOption[]
@@ -246,6 +248,8 @@ export interface AdminProduct {
   bookable: boolean
   noteKo: string | null
   noteJa: string | null
+  imageKey: string | null
+  imageUrl: string | null
   options: {
     id: number
     nameKo: string
@@ -347,6 +351,8 @@ export interface ProductSavePayload {
   bookable: boolean
   noteKo: string
   noteJa: string
+  /** 상품 대표 이미지 키(업로드 후 mediumKey). 없으면 빈 문자열. */
+  imageKey: string
 }
 
 export interface ProductOptionSavePayload {

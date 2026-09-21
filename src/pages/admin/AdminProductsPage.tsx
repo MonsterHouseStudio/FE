@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/Button'
 import { AdminPageHeader } from './AdminLayout'
 import { AsyncBoundary } from '@/components/admin/AsyncBoundary'
 import { AdminModal, BilingualField, Field, LineListField } from '@/components/admin/AdminModal'
+import { ImageUploader } from '@/components/admin/ImageUploader'
 
 const TYPE_LABEL: Record<ProductType, string> = {
   PHOTO: '사진 촬영',
@@ -51,6 +52,7 @@ function emptyProduct(sortOrder: number): ProductSavePayload {
     bookable: true,
     noteKo: '',
     noteJa: '',
+    imageKey: '',
   }
 }
 
@@ -71,6 +73,7 @@ function toPayload(p: AdminProduct): ProductSavePayload {
     bookable: p.bookable,
     noteKo: p.noteKo ?? '',
     noteJa: p.noteJa ?? '',
+    imageKey: p.imageKey ?? '',
   }
 }
 
@@ -79,9 +82,11 @@ export default function AdminProductsPage() {
   const { data, loading, error, reload } = useAsync(() => adminApi.getProducts(), [])
   const [busyId, setBusyId] = useState<number | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
-  const [editing, setEditing] = useState<{ id: number | null; form: ProductSavePayload } | null>(
-    null,
-  )
+  const [editing, setEditing] = useState<{
+    id: number | null
+    form: ProductSavePayload
+    previewUrl: string | null
+  } | null>(null)
   const [optionOf, setOptionOf] = useState<AdminProduct | null>(null)
 
   const products = data ?? []
@@ -114,7 +119,9 @@ export default function AdminProductsPage() {
         action={
           <Button
             size="sm"
-            onClick={() => setEditing({ id: null, form: emptyProduct(products.length) })}
+            onClick={() =>
+              setEditing({ id: null, form: emptyProduct(products.length), previewUrl: null })
+            }
           >
             + {t('admin.actionAdd')}
           </Button>
@@ -147,6 +154,16 @@ export default function AdminProductsPage() {
                   (product.active ? '' : 'opacity-55')
                 }
               >
+                <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg border border-ink-800 bg-ink-900">
+                  {product.imageUrl ? (
+                    <img src={product.imageUrl} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-[10px] text-ink-600">
+                      이미지 없음
+                    </div>
+                  )}
+                </div>
+
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="font-display text-lg tracking-tightest text-white">
@@ -204,7 +221,13 @@ export default function AdminProductsPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => setEditing({ id: product.id, form: toPayload(product) })}
+                      onClick={() =>
+                        setEditing({
+                          id: product.id,
+                          form: toPayload(product),
+                          previewUrl: product.imageUrl,
+                        })
+                      }
                     >
                       {t('admin.actionEdit')}
                     </Button>
@@ -239,7 +262,7 @@ export default function AdminProductsPage() {
       {editing && (
         <ProductForm
           state={editing}
-          onChange={(form) => setEditing({ ...editing, form })}
+          onChange={(next) => setEditing({ ...editing, ...next })}
           onClose={() => setEditing(null)}
           onSaved={() => {
             setEditing(null)
@@ -270,14 +293,14 @@ function ProductForm({
   onClose,
   onSaved,
 }: {
-  state: { id: number | null; form: ProductSavePayload }
-  onChange: (form: ProductSavePayload) => void
+  state: { id: number | null; form: ProductSavePayload; previewUrl: string | null }
+  onChange: (next: Partial<{ form: ProductSavePayload; previewUrl: string | null }>) => void
   onClose: () => void
   onSaved: () => void
 }) {
-  const { id, form } = state
+  const { id, form, previewUrl } = state
   const set = <K extends keyof ProductSavePayload>(k: K, v: ProductSavePayload[K]) =>
-    onChange({ ...form, [k]: v })
+    onChange({ form: { ...form, [k]: v } })
 
   const submit = async () => {
     // 빈 줄은 저장할 때만 걸러냅니다 (입력 중에 지우면 커서가 튑니다).
@@ -343,6 +366,15 @@ function ProductForm({
         ja={form.nameJa}
         onKo={(v) => set('nameKo', v)}
         onJa={(v) => set('nameJa', v)}
+      />
+
+      <ImageUploader
+        directory="product"
+        label="대표 이미지 (없으면 기본 이미지로 표시)"
+        value={previewUrl}
+        onUploaded={(img) =>
+          onChange({ form: { ...form, imageKey: img.mediumKey }, previewUrl: img.thumbUrl })
+        }
       />
 
       <BilingualField
