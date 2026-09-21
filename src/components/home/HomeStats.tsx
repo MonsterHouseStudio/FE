@@ -5,16 +5,16 @@ import { useLocale } from '@/hooks/useLocale'
 import { cn } from '@/lib/utils'
 import type { HomeStat } from '@/types'
 
-const prefersReducedMotion = () =>
+const reduceMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 /** 대상 숫자까지 easeOutCubic 으로 카운트업. active 가 true 가 될 때 시작. */
-function useCountUp(target: number, active: boolean, duration = 1500) {
+function useCountUp(target: number, active: boolean, duration = 1600) {
   const [value, setValue] = useState(0)
   useEffect(() => {
     if (!active) return
-    if (prefersReducedMotion()) {
+    if (reduceMotion()) {
       setValue(target)
       return
     }
@@ -33,45 +33,72 @@ function useCountUp(target: number, active: boolean, duration = 1500) {
 }
 
 function StatPanel({ stat, index, total }: { stat: HomeStat; index: number; total: number }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [inView, setInView] = useState(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const ob = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setInView(true)
-          ob.disconnect()
-        }
-      },
-      { threshold: 0.45 },
-    )
-    ob.observe(el)
-    return () => ob.disconnect()
-  }, [])
+  const panelRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const photoRef = useRef<HTMLImageElement>(null)
+  const [entered, setEntered] = useState(false)
 
   const isNumeric = stat.valueNumber != null
-  const count = useCountUp(stat.valueNumber ?? 0, inView && isNumeric)
+  const count = useCountUp(stat.valueNumber ?? 0, entered && isNumeric)
   const bigValue = isNumeric ? `${count.toLocaleString()}${stat.suffix ?? ''}` : stat.valueText
+
+  // 스크롤에 연동해 패럴랙스 + 문구 페이드/슬라이드. rAF 로 throttle.
+  useEffect(() => {
+    const panel = panelRef.current
+    if (!panel) return
+    if (reduceMotion()) {
+      setEntered(true)
+      return
+    }
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const rect = panel.getBoundingClientRect()
+      const vh = window.innerHeight || 1
+      // 패널 중앙이 화면 중앙에 오면 0, 위/아래로 갈수록 ±1
+      const progress = Math.max(-1, Math.min(1, (rect.top + rect.height / 2 - vh / 2) / vh))
+      const abs = Math.abs(progress)
+
+      if (contentRef.current) {
+        const op = Math.max(0, 1 - abs * 1.35)
+        contentRef.current.style.opacity = String(op)
+        contentRef.current.style.transform = `translateY(${progress * -46}px)`
+      }
+      if (photoRef.current) {
+        // 사진은 스크롤 반대로 천천히 → 깊이감(패럴랙스)
+        photoRef.current.style.transform = `translateY(${progress * 64}px) scale(1.18)`
+      }
+      // 화면 중앙 근처(45% 이내)에 들어오면 카운트업 시작
+      if (!entered && abs < 0.45) setEntered(true)
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [entered])
 
   return (
     <div
-      ref={ref}
-      className="relative flex min-h-[82vh] w-full items-center justify-center overflow-hidden"
+      ref={panelRef}
+      className="relative flex min-h-[90vh] w-full items-center justify-center overflow-hidden"
     >
-      {/* 배경: 사진이 있으면 사진 + 어두운 덮개, 없으면 브랜드 그라디언트 */}
+      {/* 배경: 사진(패럴랙스) + 어두운 덮개, 없으면 브랜드 그라디언트 */}
       {stat.photoUrl ? (
         <>
           <img
+            ref={photoRef}
             src={stat.photoUrl}
             alt=""
             aria-hidden="true"
-            className={cn(
-              'absolute inset-0 h-full w-full object-cover transition-transform duration-[1600ms] ease-out',
-              inView ? 'scale-100' : 'scale-110',
-            )}
+            className="absolute inset-0 h-full w-full object-cover will-change-transform"
+            style={{ transform: 'scale(1.18)' }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/55 to-black/85" />
         </>
@@ -88,18 +115,19 @@ function StatPanel({ stat, index, total }: { stat: HomeStat; index: number; tota
         </>
       )}
 
-      {/* 내용 */}
-      <div
-        className={cn(
-          'container-mh relative text-center transition-all duration-700 ease-out',
-          inView ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0',
-        )}
-      >
+      {/* 내용 (스크롤에 연동해 페이드/슬라이드) */}
+      <div ref={contentRef} className="container-mh relative text-center will-change-transform">
         <div className="font-poster text-sm tracking-[0.4em] text-brand-400">
-          {String(index + 1).padStart(2, '0')} <span className="text-ink-600">/ {String(total).padStart(2, '0')}</span>
+          {String(index + 1).padStart(2, '0')}{' '}
+          <span className="text-ink-600">/ {String(total).padStart(2, '0')}</span>
         </div>
 
-        <div className="mt-6 font-display font-black leading-none tracking-tightest text-white text-[19vw] sm:text-[13vw] lg:text-[150px]">
+        <div
+          className={cn(
+            'mt-6 font-display font-black leading-none tracking-tightest text-white',
+            'text-[19vw] sm:text-[13vw] lg:text-[150px]',
+          )}
+        >
           {bigValue}
         </div>
 
@@ -119,7 +147,7 @@ function StatPanel({ stat, index, total }: { stat: HomeStat; index: number; tota
   )
 }
 
-/** 홈 "숫자로 보는" — 스크롤하면 화면을 채우는 통계 패널. 관리자에서 값·사진 편집. */
+/** 홈 "숫자로 보는" — 스크롤에 연동되는 풀스크린 통계 패널. 관리자에서 값·사진 편집. */
 export default function HomeStats() {
   const locale = useLocale()
   const { data } = useQuery({
@@ -133,7 +161,7 @@ export default function HomeStats() {
   return (
     <section className="border-y border-ink-800 bg-ink-950">
       <div className="container-mh pt-16 text-center sm:pt-20">
-        <p className="eyebrow">{locale === 'ja' ? 'BY THE NUMBERS' : 'BY THE NUMBERS'}</p>
+        <p className="eyebrow">BY THE NUMBERS</p>
         <h2 className="heading-lg mt-4 text-white">
           {locale === 'ja' ? '数字で見る MONSTER HOUSE' : '숫자로 보는 MONSTER HOUSE'}
         </h2>
