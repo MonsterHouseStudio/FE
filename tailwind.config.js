@@ -81,11 +81,17 @@ export default {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-50%)' },
         },
+        // 소개 콜라주 사진의 "떠있는" 느낌 (translateY 만 → 부모의 rotate 기울임과 합성)
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-14px)' },
+        },
       },
       animation: {
         'fade-up': 'fade-up 0.5s ease-out both',
         'fade-in': 'fade-in 0.4s ease-out both',
         marquee: 'marquee 28s linear infinite',
+        float: 'float 6.5s ease-in-out infinite',
       },
     },
   },
