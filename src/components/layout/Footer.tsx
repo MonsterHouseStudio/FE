@@ -99,7 +99,12 @@ export default function Footer() {
               <span className="block text-[11px] uppercase tracking-wider text-ink-600">
                 {t('footer.email')}
               </span>
-              contact@monsterhouse.example
+              <a
+                href="mailto:monsterhousejo@gmail.com"
+                className="transition-colors hover:text-brand-400"
+              >
+                monsterhousejo@gmail.com
+              </a>
             </li>
             <li>
               <span className="block text-[11px] uppercase tracking-wider text-ink-600">
@@ -118,11 +123,6 @@ export default function Footer() {
             <li>
               <Link to={lp('/privacy')} className="text-ink-400 underline-offset-4 hover:text-brand-400 hover:underline">
                 {t('footer.privacy')}
-              </Link>
-            </li>
-            <li>
-              <Link to="/admin" className="text-ink-600 underline-offset-4 hover:text-ink-300 hover:underline">
-                {t('nav.admin')}
               </Link>
             </li>
           </ul>
