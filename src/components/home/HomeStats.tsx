@@ -59,38 +59,36 @@ function StatContent({
       className="absolute inset-0 flex items-center will-change-[opacity,transform]"
       style={{ opacity: 0 }}
     >
-      <div className="container-mh grid w-full items-center gap-6 lg:grid-cols-[minmax(0,34%)_1fr] lg:gap-10">
-        {/* 왼쪽 문구 (좌측 정렬) */}
-        <div className="text-left">
-          <div className="font-poster text-sm tracking-[0.4em] text-brand-400">
-            {String(index + 1).padStart(2, '0')}{' '}
-            <span className="text-ink-600">/ {String(total).padStart(2, '0')}</span>
+      {/* 좌측 정렬 한 열: 문구(인덱스·라벨·설명) → 그 아래 숫자 (제목과 같은 왼쪽 라인) */}
+      <div className="container-mh">
+       <div className="max-w-2xl text-left">
+        <div className="font-poster text-sm tracking-[0.4em] text-brand-400">
+          {String(index + 1).padStart(2, '0')}{' '}
+          <span className="text-ink-600">/ {String(total).padStart(2, '0')}</span>
+        </div>
+        {stat.label && (
+          <div className="mt-5 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            {stat.label}
           </div>
-          {stat.label && (
-            <div className="mt-5 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              {stat.label}
-            </div>
-          )}
-          {stat.description && (
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-ink-300 sm:text-base">
-              {stat.description}
-            </p>
-          )}
-        </div>
+        )}
+        {stat.description && (
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-300 sm:text-base">
+            {stat.description}
+          </p>
+        )}
 
-        {/* 오른쪽 거대 숫자 (전체적으로 강조) */}
-        <div className="min-w-0 text-right leading-[0.8]">
-          <span
-            className={cn(
-              'block whitespace-nowrap font-display font-black tracking-tightest text-white',
-              isNumeric
-                ? 'text-[24vw] sm:text-[20vw] lg:text-[17vw] xl:text-[16vw]'
-                : 'text-[13vw] sm:text-[11vw] lg:text-[9vw] xl:text-[8.5vw]',
-            )}
-          >
-            {bigValue}
-          </span>
-        </div>
+        {/* 숫자 (문구 아래, 크기 축소) */}
+        <span
+          className={cn(
+            'mt-6 block whitespace-nowrap font-display font-black leading-[0.85] tracking-tightest text-white',
+            isNumeric
+              ? 'text-[16vw] sm:text-[13vw] lg:text-[120px]'
+              : 'text-[10vw] sm:text-[8vw] lg:text-[72px]',
+          )}
+        >
+          {bigValue}
+        </span>
+       </div>
       </div>
     </div>
   )
