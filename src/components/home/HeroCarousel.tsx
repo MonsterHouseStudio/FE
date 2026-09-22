@@ -233,8 +233,8 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
             ) : (
               <>
                 <div className="absolute inset-0 bg-gradient-to-br from-brand-950 via-ink-950 to-black" />
-                <div className="absolute -right-24 top-1/2 -translate-y-1/2 text-brand-900/40">
-                  <LogoMark className="h-[520px] w-[520px]" />
+                <div className="absolute -right-24 top-1/2 -translate-y-1/2">
+                  <LogoMark className="h-[520px] w-[520px] opacity-[0.06]" />
                 </div>
                 <div
                   className="absolute inset-0 opacity-[0.05]"

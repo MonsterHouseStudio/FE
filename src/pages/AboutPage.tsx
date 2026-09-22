@@ -4,9 +4,8 @@ import { api } from '@/lib/api'
 import { useLocale } from '@/hooks/useLocale'
 import { cn } from '@/lib/utils'
 import { ButtonAnchor } from '@/components/ui/Button'
-import { PageHeader, Photo, Section } from '@/components/ui/primitives'
+import { Photo, Section } from '@/components/ui/primitives'
 import { Reveal } from '@/components/ui/Reveal'
-import LogoMark from '@/components/layout/Logo'
 
 const YOUTUBE = import.meta.env.VITE_YOUTUBE_CHANNEL_URL ?? 'https://www.youtube.com'
 
@@ -27,26 +26,25 @@ export default function AboutPage() {
 
   return (
     <>
-      <PageHeader eyebrow={t('about.subtitle')} title={t('about.title')} />
-
-      {/* 소개 — 좌: 문구 / 우: 기울여 떠있는 콜라주 */}
-      <Section>
-        <div className="grid items-center gap-14 lg:grid-cols-2">
-          <Reveal>
-            <LogoMark className="h-14 w-14 text-brand-600" />
-            <h2 className="heading-md mt-7 text-white">{introTitle}</h2>
-            <p className="mt-6 max-w-lg text-sm leading-relaxed text-ink-300 sm:text-base">
+      {/* 히어로 — ABOUT · 로고 · 소개 문구 · 콜라주를 한 섹션으로 (진입 즉시 카드 노출) */}
+      <section className="relative overflow-hidden border-b border-ink-800">
+        <div className="container-mh grid items-center gap-12 py-14 sm:py-16 lg:min-h-[calc(100dvh-4.5rem)] lg:grid-cols-2 lg:gap-8 lg:py-10">
+          <div>
+            <p className="eyebrow">{t('about.subtitle')}</p>
+            <img
+              src="/mh-logo.png"
+              alt="MONSTER HOUSE"
+              className="mt-6 h-28 w-auto sm:h-32 lg:h-36"
+            />
+            <h1 className="heading-lg mt-8 text-white">{introTitle}</h1>
+            <p className="mt-5 max-w-lg text-sm leading-relaxed text-ink-300 sm:text-base">
               {introDesc}
             </p>
-          </Reveal>
+          </div>
 
-          <Reveal delay={120} y={40}>
-            <IntroCollage
-              photos={[intro?.photo1Url, intro?.photo2Url, intro?.photo3Url]}
-            />
-          </Reveal>
+          <IntroCollage photos={[intro?.photo1Url, intro?.photo2Url, intro?.photo3Url]} />
         </div>
-      </Section>
+      </section>
 
       {/* 크루 */}
       {crew.length > 0 && (
@@ -129,34 +127,34 @@ export default function AboutPage() {
 }
 
 /**
- * 기울어져 떠있는 3장 콜라주.
- * 바깥 div = 위치 + 기울임(rotate), 안쪽 div = 부유(translateY) 애니메이션 → 합성.
- * prefers-reduced-motion 이면 float 정지(motion-reduce:animate-none).
+ * 기울어져 떠있는 3장 콜라주(크게, 진입 즉시 노출).
+ * 바깥 div = 위치 + 기울임(rotate), 안쪽 div = 부유(translateY) → 합성.
+ * prefers-reduced-motion 이면 float 정지.
  */
 function IntroCollage({ photos }: { photos: (string | null | undefined)[] }) {
   return (
-    <div className="relative mx-auto h-[360px] w-full max-w-md sm:h-[440px] lg:h-[500px]">
+    <div className="relative mx-auto h-[420px] w-full max-w-xl sm:h-[520px] lg:h-[600px]">
       {/* 뒤에 은은한 브랜드 글로우 */}
-      <div className="pointer-events-none absolute inset-8 rounded-full bg-brand-700/20 blur-3xl" />
+      <div className="pointer-events-none absolute inset-6 rounded-full bg-brand-700/25 blur-3xl" />
 
       <FloatCard
         url={photos[0]}
         seed={1}
-        className="absolute left-0 top-6 z-10 w-[52%] rotate-[-5deg]"
+        className="absolute left-0 top-8 z-10 w-[56%] rotate-[-5deg]"
         duration={6.5}
         delay={0}
       />
       <FloatCard
         url={photos[1]}
         seed={8}
-        className="absolute right-0 top-0 z-20 w-[46%] rotate-[6deg]"
+        className="absolute right-0 top-0 z-20 w-[50%] rotate-[6deg]"
         duration={7.6}
         delay={0.7}
       />
       <FloatCard
         url={photos[2]}
         seed={4}
-        className="absolute bottom-0 left-1/4 z-30 w-[50%] rotate-[-3deg]"
+        className="absolute bottom-0 left-[22%] z-30 w-[54%] rotate-[-3deg]"
         duration={6.9}
         delay={1.2}
       />
