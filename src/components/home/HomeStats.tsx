@@ -32,7 +32,10 @@ function useCountUp(target: number, active: boolean, duration = 1500) {
   return value
 }
 
-/** 한 통계의 중앙 콘텐츠(스크롤 진행도에 따라 크로스페이드로 나타남). */
+/**
+ * 한 통계 콘텐츠(스크롤 진행도에 따라 크로스페이드).
+ * 왼쪽 = 인덱스·라벨·설명(좌측 정렬), 오른쪽 = 거대한 숫자(전체적으로 강조).
+ */
 function StatContent({
   stat,
   index,
@@ -53,35 +56,41 @@ function StatContent({
   return (
     <div
       ref={innerRef}
-      className="absolute inset-0 flex items-center justify-center will-change-[opacity,transform]"
+      className="absolute inset-0 flex items-center will-change-[opacity,transform]"
       style={{ opacity: 0 }}
     >
-      <div className="container-mh text-center">
-        <div className="font-poster text-sm tracking-[0.4em] text-brand-400">
-          {String(index + 1).padStart(2, '0')}{' '}
-          <span className="text-ink-600">/ {String(total).padStart(2, '0')}</span>
-        </div>
-
-        <div
-          className={cn(
-            'mt-6 font-display font-black leading-none tracking-tightest text-white',
-            'text-[20vw] sm:text-[14vw] lg:text-[160px]',
-          )}
-        >
-          {bigValue}
-        </div>
-
-        {stat.label && (
-          <div className="mt-2 font-display text-xl tracking-tight text-white sm:text-2xl">
-            {stat.label}
+      <div className="container-mh grid w-full items-center gap-6 lg:grid-cols-[minmax(0,34%)_1fr] lg:gap-10">
+        {/* 왼쪽 문구 (좌측 정렬) */}
+        <div className="text-left">
+          <div className="font-poster text-sm tracking-[0.4em] text-brand-400">
+            {String(index + 1).padStart(2, '0')}{' '}
+            <span className="text-ink-600">/ {String(total).padStart(2, '0')}</span>
           </div>
-        )}
+          {stat.label && (
+            <div className="mt-5 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              {stat.label}
+            </div>
+          )}
+          {stat.description && (
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-ink-300 sm:text-base">
+              {stat.description}
+            </p>
+          )}
+        </div>
 
-        {stat.description && (
-          <p className="mx-auto mt-5 max-w-md text-sm leading-relaxed text-ink-300 sm:text-base">
-            {stat.description}
-          </p>
-        )}
+        {/* 오른쪽 거대 숫자 (전체적으로 강조) */}
+        <div className="min-w-0 text-right leading-[0.8]">
+          <span
+            className={cn(
+              'block whitespace-nowrap font-display font-black tracking-tightest text-white',
+              isNumeric
+                ? 'text-[24vw] sm:text-[20vw] lg:text-[17vw] xl:text-[16vw]'
+                : 'text-[13vw] sm:text-[11vw] lg:text-[9vw] xl:text-[8.5vw]',
+            )}
+          >
+            {bigValue}
+          </span>
+        </div>
       </div>
     </div>
   )
@@ -92,7 +101,6 @@ function ScrollStats({ stats, title }: { stats: HomeStat[]; title: string }) {
   const wrapRef = useRef<HTMLElement>(null)
   const contentRefs = useRef<(HTMLDivElement | null)[]>([])
   const photoRefs = useRef<(HTMLDivElement | null)[]>([])
-  const railRefs = useRef<(HTMLSpanElement | null)[]>([])
   // 카운트업 트리거용 — 한 번이라도 활성이 된 통계는 계속 활성으로 간주
   const [seen, setSeen] = useState<boolean[]>(() => stats.map(() => false))
   const seenRef = useRef(seen)
@@ -140,12 +148,6 @@ function ScrollStats({ stats, title }: { stats: HomeStat[]; title: string }) {
         if (photo) {
           photo.style.opacity = String(Math.max(0, 1 - Math.abs(dist) * 1.35))
           photo.style.transform = `translateY(${dist * -26}px) scale(1.12)`
-        }
-        const rail = railRefs.current[i]
-        if (rail) {
-          const near = Math.abs(dist) < 0.5
-          rail.style.color = near ? '#f75d68' : '#4a4a55'
-          rail.style.opacity = near ? '1' : '0.5'
         }
         if (Math.abs(dist) < 0.55 && !nextSeen[i]) {
           nextSeen[i] = true
@@ -202,21 +204,7 @@ function ScrollStats({ stats, title }: { stats: HomeStat[]; title: string }) {
           <h2 className="heading-md mt-3 text-white">{title}</h2>
         </div>
 
-        {/* 좌측 인덱스 레일 */}
-        <div className="absolute left-5 top-1/2 hidden -translate-y-1/2 flex-col gap-3 sm:flex">
-          {stats.map((stat, i) => (
-            <span
-              key={`rail-${stat.id}`}
-              ref={(el) => (railRefs.current[i] = el)}
-              className="font-poster text-xs tracking-[0.3em] transition-colors"
-              style={{ color: i === 0 ? '#f75d68' : '#4a4a55' }}
-            >
-              {String(i + 1).padStart(2, '0')}
-            </span>
-          ))}
-        </div>
-
-        {/* 중앙 콘텐츠들(크로스페이드) */}
+        {/* 통계 콘텐츠들(크로스페이드) */}
         {stats.map((stat, i) => (
           <StatContent
             key={stat.id}
@@ -227,11 +215,6 @@ function ScrollStats({ stats, title }: { stats: HomeStat[]; title: string }) {
             innerRef={(el) => (contentRefs.current[i] = el)}
           />
         ))}
-
-        {/* 스크롤 유도 힌트 */}
-        <div className="absolute inset-x-0 bottom-8 text-center text-[10px] uppercase tracking-[0.4em] text-ink-500">
-          SCROLL
-        </div>
       </div>
     </section>
   )
