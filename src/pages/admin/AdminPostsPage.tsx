@@ -155,7 +155,7 @@ export default function AdminPostsPage() {
 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="truncate font-semibold text-ink-50">
+                      <h2 className="truncate font-semibold text-white">
                         {ko?.title ?? post.translations[0]?.title ?? post.slug}
                       </h2>
                       <Badge tone={post.kind === 'SNS' ? 'brand' : 'neutral'}>
@@ -330,7 +330,7 @@ function PostForm({
               className={
                 'flex-1 rounded-lg border px-4 py-3 text-sm font-semibold transition-colors ' +
                 (form.kind === k
-                  ? 'border-brand-500 bg-brand-600/15 text-ink-50'
+                  ? 'border-brand-500 bg-brand-600/15 text-white'
                   : 'border-ink-700 text-ink-300 hover:border-ink-500')
               }
             >
@@ -415,7 +415,7 @@ function PostForm({
                   'rounded-full border px-4 py-1.5 text-xs font-bold transition-colors ' +
                   (tab === locale
                     ? 'border-brand-500 bg-brand-600 text-white'
-                    : 'border-ink-800 text-ink-400 hover:text-ink-50')
+                    : 'border-ink-800 text-ink-400 hover:text-white')
                 }
               >
                 {locale === 'KO' ? '한국어' : '日本語'}

@@ -172,7 +172,7 @@ function ScrollStats({ stats, title }: { stats: HomeStat[]; title: string }) {
   return (
     <section
       ref={wrapRef}
-      className="relative bg-ink-50"
+      className="relative bg-ink-950"
       style={{ height: `${N * 100}vh` }}
       aria-label={title}
     >
@@ -189,7 +189,7 @@ function ScrollStats({ stats, title }: { stats: HomeStat[]; title: string }) {
               {stat.photoUrl ? (
                 <img src={stat.photoUrl} alt="" aria-hidden className="h-full w-full object-cover" />
               ) : (
-                <div className="h-full w-full bg-gradient-to-br from-brand-950 via-ink-50 to-black" />
+                <div className="h-full w-full bg-gradient-to-br from-brand-950 via-ink-950 to-black" />
               )}
             </div>
           ))}

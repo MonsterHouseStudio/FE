@@ -171,7 +171,7 @@ export default function BookingPage() {
             {/* ---- STEP 1 : 상품 선택 ---- */}
             {step === 1 && (
               <section className="animate-fade-up">
-                <h2 className="heading-md text-ink-50">{t('booking.selectProduct')}</h2>
+                <h2 className="heading-md text-white">{t('booking.selectProduct')}</h2>
                 <div className="mt-7 space-y-4">
                   {!products ? (
                     <div className="flex justify-center py-16">
@@ -196,7 +196,7 @@ export default function BookingPage() {
                         <Photo src={p.imageUrl} seed={p.id * 4} alt={p.name} className="h-20 w-20 shrink-0 rounded-lg sm:h-24 sm:w-24" />
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="font-display text-lg tracking-tightest text-ink-50">
+                            <h3 className="font-display text-lg tracking-tightest text-white">
                               {p.name}
                             </h3>
                             <Badge tone="brand">
@@ -206,10 +206,10 @@ export default function BookingPage() {
                           <p className="mt-1.5 line-clamp-2 text-sm text-ink-400">{p.description}</p>
                         </div>
                         <div className="hidden shrink-0 text-right sm:block">
-                          <div className="font-display text-lg tracking-tightest text-ink-50">
+                          <div className="font-display text-lg tracking-tightest text-white">
                             {formatPrice(p.price, locale)}
                           </div>
-                          <div className="mt-1 text-xs text-brand-600">→</div>
+                          <div className="mt-1 text-xs text-brand-400">→</div>
                         </div>
                       </button>
                     ))
@@ -231,7 +231,7 @@ export default function BookingPage() {
                   </p>
                 )}
                 <div>
-                  <h2 className="heading-md text-ink-50">{t('booking.selectDate')}</h2>
+                  <h2 className="heading-md text-white">{t('booking.selectDate')}</h2>
                   <div className="mt-6">
                     <Calendar
                       value={dateKey}
@@ -245,7 +245,7 @@ export default function BookingPage() {
 
                 {dateKey && (
                   <div>
-                    <h2 className="heading-md text-ink-50">{t('booking.selectTime')}</h2>
+                    <h2 className="heading-md text-white">{t('booking.selectTime')}</h2>
                     <p className="mt-2 text-sm text-ink-400">{formatDate(dateKey, locale)}</p>
 
                     <div className="surface mt-5 p-5 sm:p-7">
@@ -277,7 +277,7 @@ export default function BookingPage() {
                                     'cursor-not-allowed border-ink-800 bg-ink-900/40 text-ink-700',
                                   slot.available &&
                                     !selected &&
-                                    'border-ink-700 text-ink-100 hover:border-brand-500 hover:text-ink-50',
+                                    'border-ink-700 text-ink-100 hover:border-brand-500 hover:text-white',
                                   selected && 'border-brand-500 bg-brand-600 text-white',
                                 )}
                               >
@@ -310,7 +310,7 @@ export default function BookingPage() {
                 {/* ---- 추가 옵션 ---- */}
                 {(product?.options?.length ?? 0) > 0 && (
                   <div className="mb-8">
-                    <h2 className="heading-md text-ink-50">{t('booking.optionsTitle')}</h2>
+                    <h2 className="heading-md text-white">{t('booking.optionsTitle')}</h2>
                     <p className="mt-2 text-sm text-ink-400">{t('booking.optionsHint')}</p>
 
                     <div className="surface mt-5 divide-y divide-ink-800">
@@ -322,7 +322,7 @@ export default function BookingPage() {
                             className="flex flex-wrap items-center justify-between gap-4 p-5"
                           >
                             <div className="min-w-0">
-                              <div className="text-sm font-semibold text-ink-50">{option.name}</div>
+                              <div className="text-sm font-semibold text-white">{option.name}</div>
                               <div className="mt-1 text-xs text-ink-500">
                                 + {formatPrice(option.price, locale)}
                                 {option.maxQuantity > 1 && ` · ${t('shooting.optionEach')}`}
@@ -360,7 +360,7 @@ export default function BookingPage() {
                                 >
                                   −
                                 </button>
-                                <span className="w-8 text-center font-display text-lg text-ink-50">
+                                <span className="w-8 text-center font-display text-lg text-white">
                                   {qty}
                                 </span>
                                 <button
@@ -386,7 +386,7 @@ export default function BookingPage() {
                   </div>
                 )}
 
-                <h2 className="heading-md text-ink-50">{t('booking.formTitle')}</h2>
+                <h2 className="heading-md text-white">{t('booking.formTitle')}</h2>
 
                 <form onSubmit={submit} className="surface mt-6 space-y-6 p-6 sm:p-8" noValidate>
                   <div className="grid gap-6 sm:grid-cols-2">
@@ -477,7 +477,7 @@ export default function BookingPage() {
                       {t('booking.privacyDetail')}{' '}
                       <Link
                         to={lp('/privacy')}
-                        className="text-brand-600 underline underline-offset-2"
+                        className="text-brand-400 underline underline-offset-2"
                       >
                         {t('booking.privacyLink')}
                       </Link>
@@ -515,7 +515,7 @@ export default function BookingPage() {
                   <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-600 text-3xl text-white">
                     ✓
                   </div>
-                  <h2 className="heading-md mt-7 text-ink-50">{t('booking.doneTitle')}</h2>
+                  <h2 className="heading-md mt-7 text-white">{t('booking.doneTitle')}</h2>
                   <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-ink-300">
                     {t('booking.doneDesc')}
                   </p>
@@ -524,7 +524,7 @@ export default function BookingPage() {
                     <div className="text-[11px] uppercase tracking-[0.2em] text-ink-500">
                       {t('booking.bookingCode')}
                     </div>
-                    <div className="mt-2 font-display text-2xl tracking-tightest text-brand-600">
+                    <div className="mt-2 font-display text-2xl tracking-tightest text-brand-400">
                       {result.bookingCode}
                     </div>
                     <dl className="mt-6 space-y-2.5 border-t border-ink-800 pt-5 text-left text-sm">
@@ -552,7 +552,7 @@ export default function BookingPage() {
                         ))}
                       <div className="flex justify-between gap-4 border-t border-ink-800 pt-3">
                         <dt className="text-ink-500">{t('booking.totalPrice')}</dt>
-                        <dd className="font-display text-base text-ink-50">
+                        <dd className="font-display text-base text-white">
                           {formatPrice(result.totalPrice, locale)}
                         </dd>
                       </div>
@@ -592,19 +592,19 @@ export default function BookingPage() {
               <dl className="mt-5 space-y-4 text-sm">
                 <div>
                   <dt className="text-xs text-ink-600">{t('admin.product')}</dt>
-                  <dd className="mt-1 font-semibold text-ink-50">
+                  <dd className="mt-1 font-semibold text-white">
                     {product?.name ?? <span className="text-ink-700">—</span>}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-xs text-ink-600">{t('booking.stepDate')}</dt>
-                  <dd className="mt-1 font-semibold text-ink-50">
+                  <dd className="mt-1 font-semibold text-white">
                     {dateKey ? formatDate(dateKey, locale) : <span className="text-ink-700">—</span>}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-xs text-ink-600">{t('booking.stepTime')}</dt>
-                  <dd className="mt-1 font-semibold text-ink-50">
+                  <dd className="mt-1 font-semibold text-white">
                     {startAt ? (
                       `${formatTime(startAt)} (${t('common.minutes', { count: product?.durationMin ?? 0 })})`
                     ) : (
@@ -642,7 +642,7 @@ export default function BookingPage() {
                     <span className="text-xs uppercase tracking-wider text-ink-500">
                       {t('booking.totalPrice')}
                     </span>
-                    <span className="font-display text-xl tracking-tightest text-ink-50">
+                    <span className="font-display text-xl tracking-tightest text-white">
                       {formatPrice(calcTotal(product, selectedOptions), locale)}
                     </span>
                   </div>
@@ -674,7 +674,7 @@ function PaymentBox({ booking }: { booking: Booking }) {
 
   return (
     <div className="mx-auto mt-6 max-w-sm rounded-xl border border-brand-700/50 bg-ink-950 p-6 text-left">
-      <div className="text-[11px] uppercase tracking-[0.2em] text-brand-600">
+      <div className="text-[11px] uppercase tracking-[0.2em] text-brand-400">
         {t('payment.title')}
       </div>
 
@@ -688,11 +688,11 @@ function PaymentBox({ booking }: { booking: Booking }) {
       <div className="mt-4 flex items-baseline justify-between gap-4">
         <span className="text-sm text-ink-400">
           {t('payment.dueNow')}
-          <span className="ml-1.5 rounded bg-brand-600/20 px-1.5 py-0.5 text-[10px] font-semibold text-brand-700">
+          <span className="ml-1.5 rounded bg-brand-600/20 px-1.5 py-0.5 text-[10px] font-semibold text-brand-300">
             {plan.mode === 'FULL' ? t('payment.fullLabel') : t('payment.depositLabel')}
           </span>
         </span>
-        <span className="font-display text-xl tracking-tightest text-ink-50">
+        <span className="font-display text-xl tracking-tightest text-white">
           {formatPrice(plan.dueNow, locale)}
         </span>
       </div>

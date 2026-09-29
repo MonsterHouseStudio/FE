@@ -50,7 +50,7 @@ export default function AdminDashboardPage() {
                   <div
                     className={
                       'mt-3 font-display text-3xl tracking-tightest ' +
-                      (stat.alert ? 'text-brand-600' : 'text-ink-50')
+                      (stat.alert ? 'text-brand-400' : 'text-white')
                     }
                   >
                     {stat.value}
@@ -75,8 +75,8 @@ export default function AdminDashboardPage() {
             <div className="mt-8 grid gap-6 lg:grid-cols-2">
               <section className="surface overflow-hidden">
                 <header className="flex items-center justify-between border-b border-ink-800 px-6 py-4">
-                  <h2 className="text-sm font-bold text-ink-50">{t('admin.recentBookings')}</h2>
-                  <Link to="/admin/bookings" className="text-xs text-brand-600 hover:underline">
+                  <h2 className="text-sm font-bold text-white">{t('admin.recentBookings')}</h2>
+                  <Link to="/admin/bookings" className="text-xs text-brand-400 hover:underline">
                     {t('common.more')} →
                   </Link>
                 </header>
@@ -88,7 +88,7 @@ export default function AdminDashboardPage() {
                       <li key={b.id} className="flex items-center gap-4 px-6 py-4">
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="truncate text-sm font-semibold text-ink-50">
+                            <span className="truncate text-sm font-semibold text-white">
                               {b.name}
                             </span>
                             {b.locale === 'JA' && <Badge tone="neutral">JA</Badge>}
@@ -108,8 +108,8 @@ export default function AdminDashboardPage() {
 
               <section className="surface overflow-hidden">
                 <header className="flex items-center justify-between border-b border-ink-800 px-6 py-4">
-                  <h2 className="text-sm font-bold text-ink-50">{t('admin.recentInquiries')}</h2>
-                  <Link to="/admin/inquiries" className="text-xs text-brand-600 hover:underline">
+                  <h2 className="text-sm font-bold text-white">{t('admin.recentInquiries')}</h2>
+                  <Link to="/admin/inquiries" className="text-xs text-brand-400 hover:underline">
                     {t('common.more')} →
                   </Link>
                 </header>
@@ -121,7 +121,7 @@ export default function AdminDashboardPage() {
                       <li key={i.id} className="flex items-center gap-4 px-6 py-4">
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="truncate text-sm font-semibold text-ink-50">
+                            <span className="truncate text-sm font-semibold text-white">
                               {i.name}
                             </span>
                             <Badge tone={i.type === 'INTERPRETER' ? 'brand' : 'neutral'}>

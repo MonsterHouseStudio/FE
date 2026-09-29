@@ -63,7 +63,7 @@ export default function MediaPage() {
                   'rounded-full border px-5 py-2 text-xs font-bold uppercase tracking-wider transition-colors',
                   cat === c
                     ? 'border-brand-500 bg-brand-600 text-white'
-                    : 'border-ink-800 text-ink-400 hover:border-ink-600 hover:text-ink-50',
+                    : 'border-ink-800 text-ink-400 hover:border-ink-600 hover:text-white',
                 )}
               >
                 {c === 'ALL' ? t('media.seriesAll') : catLabel(c, locale)}
@@ -119,7 +119,7 @@ function MediaCard({
       </div>
       <div className="p-6">
         <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wider">
-          <span className="text-brand-600">{catLabel(post.category, locale)}</span>
+          <span className="text-brand-400">{catLabel(post.category, locale)}</span>
           {post.series && (
             <>
               <span className="text-ink-700">·</span>
@@ -127,7 +127,7 @@ function MediaCard({
             </>
           )}
         </div>
-        <h3 className="mt-3 text-base font-bold leading-snug text-ink-50 group-hover:text-brand-700">
+        <h3 className="mt-3 text-base font-bold leading-snug text-white group-hover:text-brand-300">
           {post.title}
         </h3>
         {!isSns && post.excerpt && (

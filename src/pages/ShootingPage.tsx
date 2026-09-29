@@ -92,7 +92,7 @@ export default function ShootingPage() {
               <span className="font-display text-4xl tracking-tightest text-brand-800">
                 0{step.n}
               </span>
-              <h3 className="mt-4 text-base font-bold text-ink-50">{step.title}</h3>
+              <h3 className="mt-4 text-base font-bold text-white">{step.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-ink-400">{step.desc}</p>
             </div>
           ))}
@@ -102,7 +102,7 @@ export default function ShootingPage() {
       {/* 안내 */}
       <Section>
         <div className="surface border-brand-800/50 bg-brand-950/20 p-7 sm:p-10">
-          <h2 className="font-display text-xl tracking-tightest text-ink-50">
+          <h2 className="font-display text-xl tracking-tightest text-white">
             {t('shooting.noticeTitle')}
           </h2>
           <ul className="mt-5 space-y-3">
@@ -169,7 +169,7 @@ function ProductCard({
           {!product.bookable && <Badge tone="neutral">{t('shooting.inquiryOnly')}</Badge>}
         </div>
 
-        <h3 className="mt-4 font-display text-2xl tracking-tightest text-ink-50 sm:text-3xl">
+        <h3 className="mt-4 font-display text-2xl tracking-tightest text-white sm:text-3xl">
           {product.name}
         </h3>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-300">{product.description}</p>
@@ -207,7 +207,7 @@ function ProductCard({
                       </span>
                     )}
                   </span>
-                  <span className="shrink-0 font-semibold text-brand-700">
+                  <span className="shrink-0 font-semibold text-brand-300">
                     + {formatPrice(option.price, locale)}
                   </span>
                 </li>
@@ -225,7 +225,7 @@ function ProductCard({
             <div className="text-[11px] uppercase tracking-[0.2em] text-ink-500">
               {t('shooting.price')}
             </div>
-            <div className="mt-1 font-display text-2xl tracking-tightest text-ink-50">
+            <div className="mt-1 font-display text-2xl tracking-tightest text-white">
               {formatProductPrice(product, locale, t)}
             </div>
           </div>

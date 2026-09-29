@@ -106,7 +106,7 @@ export default function AdminHomeStatsPage() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-display text-2xl tracking-tightest text-ink-50">
+                    <span className="font-display text-2xl tracking-tightest text-white">
                       {s.valueNumber != null ? `${s.valueNumber}${s.suffix ?? ''}` : s.valueText}
                     </span>
                     <span className="text-sm text-ink-300">{s.labelKo}</span>

@@ -68,17 +68,17 @@ export default function Calendar({ value, onChange }: Props) {
           onClick={() => move(-1)}
           disabled={!canGoPrev}
           aria-label={t('common.prev')}
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-700 text-ink-300 transition-colors hover:border-brand-500 hover:text-ink-50 disabled:opacity-25 disabled:hover:border-ink-700"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-700 text-ink-300 transition-colors hover:border-brand-500 hover:text-white disabled:opacity-25 disabled:hover:border-ink-700"
         >
           ‹
         </button>
-        <div className="font-display text-lg tracking-tightest text-ink-50">{monthLabel}</div>
+        <div className="font-display text-lg tracking-tightest text-white">{monthLabel}</div>
         <button
           type="button"
           onClick={() => move(1)}
           disabled={!canGoNext}
           aria-label={t('common.next')}
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-700 text-ink-300 transition-colors hover:border-brand-500 hover:text-ink-50 disabled:opacity-25 disabled:hover:border-ink-700"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-700 text-ink-300 transition-colors hover:border-brand-500 hover:text-white disabled:opacity-25 disabled:hover:border-ink-700"
         >
           ›
         </button>

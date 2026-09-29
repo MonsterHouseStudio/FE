@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocalePath } from '@/hooks/useLocale'
 import { ButtonLink } from '@/components/ui/Button'
+import LogoMark from '@/components/layout/Logo'
 import { cn } from '@/lib/utils'
 import type { Banner } from '@/types'
 
@@ -231,14 +232,9 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
               </>
             ) : (
               <>
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-950 via-ink-50 to-black" />
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-950 via-ink-950 to-black" />
                 <div className="absolute -right-24 top-1/2 -translate-y-1/2">
-                  <img
-                    src="/mh-logo-mark-white.png"
-                    alt=""
-                    aria-hidden="true"
-                    className="h-[520px] w-[520px] object-contain opacity-[0.06]"
-                  />
+                  <LogoMark className="h-[520px] w-[520px] opacity-[0.06]" />
                 </div>
                 <div
                   className="absolute inset-0 opacity-[0.05]"
@@ -263,12 +259,7 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
                 <ButtonLink to={lp('/shooting/booking')} size="lg">
                   {t('home.heroCta')}
                 </ButtonLink>
-                <ButtonLink
-                  to={lp('/shooting')}
-                  variant="outline"
-                  size="lg"
-                  className="!border-white/40 !text-white hover:!border-white hover:!bg-white/10"
-                >
+                <ButtonLink to={lp('/shooting')} variant="outline" size="lg">
                   {t('home.heroCtaSub')}
                 </ButtonLink>
               </div>

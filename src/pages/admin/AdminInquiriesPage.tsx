@@ -67,7 +67,7 @@ export default function AdminInquiriesPage() {
               'rounded-full border px-4 py-1.5 text-xs font-bold transition-colors',
               filter === f.key
                 ? 'border-brand-500 bg-brand-600 text-white'
-                : 'border-ink-800 text-ink-400 hover:text-ink-50',
+                : 'border-ink-800 text-ink-400 hover:text-white',
             )}
           >
             {f.label}
@@ -104,7 +104,7 @@ export default function AdminInquiriesPage() {
                           : t('interpreter.typeVideo')}
                       </Badge>
                       <Badge tone="neutral">{row.locale}</Badge>
-                      <span className="text-sm font-semibold text-ink-50">{row.name}</span>
+                      <span className="text-sm font-semibold text-white">{row.name}</span>
                     </div>
                     <p className="mt-2 text-xs text-ink-500">
                       {row.contact} · {row.email}
@@ -150,7 +150,7 @@ export default function AdminInquiriesPage() {
                   </Button>
                   <a
                     href={`mailto:${row.email}`}
-                    className="inline-flex items-center rounded-full border border-ink-700 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-ink-300 transition-colors hover:border-brand-500 hover:text-ink-50"
+                    className="inline-flex items-center rounded-full border border-ink-700 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-ink-300 transition-colors hover:border-brand-500 hover:text-white"
                   >
                     {t('footer.email')}
                   </a>

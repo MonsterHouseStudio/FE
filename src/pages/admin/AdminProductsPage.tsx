@@ -166,7 +166,7 @@ export default function AdminProductsPage() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="font-display text-lg tracking-tightest text-ink-50">
+                    <h2 className="font-display text-lg tracking-tightest text-white">
                       {product.nameKo}
                     </h2>
                     <Badge tone="neutral">{TYPE_LABEL[product.type]}</Badge>
@@ -203,7 +203,7 @@ export default function AdminProductsPage() {
                     <button
                       type="button"
                       onClick={() => setOptionOf(product)}
-                      className="ml-2 font-bold text-brand-600 hover:underline"
+                      className="ml-2 font-bold text-brand-400 hover:underline"
                     >
                       관리
                     </button>
@@ -211,7 +211,7 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div className="text-right">
-                  <div className="font-display text-lg tracking-tightest text-ink-50">
+                  <div className="font-display text-lg tracking-tightest text-white">
                     {formatPrice(product.price, 'ko')}
                     <span className="ml-0.5 text-xs font-normal text-ink-500">
                       {UNIT_SUFFIX[product.priceUnit]}
@@ -543,7 +543,7 @@ function OptionManager({
             {product.options.map((o) => (
               <li key={o.id} className="flex items-center justify-between gap-3 px-4 py-3">
                 <div className="min-w-0">
-                  <span className="text-sm text-ink-50">{o.nameKo}</span>
+                  <span className="text-sm text-white">{o.nameKo}</span>
                   <span className="ml-2 text-xs text-ink-500">
                     +{formatPrice(o.price, 'ko')} · 최대 {o.maxQuantity}개
                   </span>
@@ -554,7 +554,7 @@ function OptionManager({
                     type="button"
                     disabled={busy}
                     onClick={() => startEdit(o)}
-                    className="text-[11px] text-ink-400 hover:text-ink-50"
+                    className="text-[11px] text-ink-400 hover:text-white"
                   >
                     수정
                   </button>
@@ -583,7 +583,7 @@ function OptionManager({
             <button
               type="button"
               onClick={cancelEdit}
-              className="text-[11px] text-ink-400 hover:text-ink-50"
+              className="text-[11px] text-ink-400 hover:text-white"
             >
               새로 추가로 돌아가기
             </button>

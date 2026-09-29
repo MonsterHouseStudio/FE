@@ -17,7 +17,7 @@ export function PageHeader({
     <header className="border-b border-ink-800 bg-gradient-to-b from-ink-900 to-ink-950">
       <div className="container-mh py-16 sm:py-24">
         <p className="eyebrow animate-fade-in">{eyebrow}</p>
-        <h1 className="heading-lg mt-4 text-ink-50 animate-fade-up">{title}</h1>
+        <h1 className="heading-lg mt-4 text-white animate-fade-up">{title}</h1>
         {desc && (
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-ink-300 sm:text-base animate-fade-up">
             {desc}
@@ -52,7 +52,7 @@ export function Section({
           <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
             <div>
               {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-              {title && <h2 className="heading-md mt-3 whitespace-pre-line text-ink-50">{title}</h2>}
+              {title && <h2 className="heading-md mt-3 whitespace-pre-line text-white">{title}</h2>}
               {desc && <p className="mt-4 max-w-xl text-sm text-ink-300">{desc}</p>}
             </div>
             {action}
@@ -66,7 +66,7 @@ export function Section({
 
 // ===== 배지 =====
 const BADGE_TONES = {
-  brand: 'bg-brand-600/15 text-brand-700 border-brand-600/40',
+  brand: 'bg-brand-600/15 text-brand-300 border-brand-600/40',
   neutral: 'bg-ink-800 text-ink-300 border-ink-700',
   success: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30',
   warning: 'bg-amber-500/10 text-amber-300 border-amber-500/30',
@@ -177,7 +177,7 @@ export function Photo({
         </svg>
       )}
       {label && (
-        <span className="absolute bottom-3 left-3 right-3 truncate text-[11px] text-ink-50/70">
+        <span className="absolute bottom-3 left-3 right-3 truncate text-[11px] text-white/70">
           {label}
         </span>
       )}

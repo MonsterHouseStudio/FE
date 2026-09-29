@@ -87,7 +87,7 @@ export default function PrivacyPage() {
           <div className="mt-10 space-y-10">
             {SECTIONS[locale].map((section) => (
               <section key={section.title}>
-                <h2 className="font-display text-lg tracking-tightest text-ink-50">
+                <h2 className="font-display text-lg tracking-tightest text-white">
                   {section.title}
                 </h2>
                 <p className="mt-4 whitespace-pre-line text-sm leading-[1.9] text-ink-300">
