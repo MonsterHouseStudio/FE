@@ -71,7 +71,7 @@ export function WeeklyHoursModal({
       <ul className="divide-y divide-ink-800 rounded-lg border border-ink-800">
         {rows.map((r, i) => (
           <li key={r.dayOfWeek} className="flex flex-wrap items-center gap-3 px-4 py-3">
-            <span className="w-6 shrink-0 text-sm font-bold text-white">
+            <span className="w-6 shrink-0 text-sm font-bold text-ink-50">
               {DAY_ORDER[i].label}
             </span>
 

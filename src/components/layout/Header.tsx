@@ -36,10 +36,10 @@ export default function Header() {
   return (
     <header
       className={cn(
-        'fixed inset-x-0 top-0 z-50 transition-all duration-300',
+        'fixed inset-x-0 top-0 z-50 transition-all duration-300 backdrop-blur-md',
         scrolled || open
-          ? 'border-b border-ink-800 bg-ink-950/92 backdrop-blur-md'
-          : 'border-b border-transparent bg-gradient-to-b from-ink-950/80 to-transparent',
+          ? 'border-b border-ink-800 bg-ink-950/92'
+          : 'border-b border-transparent bg-ink-950/70',
       )}
     >
       <div className="container-mh flex h-16 items-center justify-between gap-6 sm:h-20">
@@ -49,7 +49,7 @@ export default function Header() {
             alt=""
             className="h-7 w-7 object-contain sm:h-8 sm:w-8"
           />
-          <span className="font-display text-base tracking-tightest text-white sm:text-lg">
+          <span className="font-display text-base tracking-tightest text-ink-50 sm:text-lg">
             MONSTER HOUSE
           </span>
         </Link>
@@ -62,7 +62,7 @@ export default function Header() {
               className={({ isActive }) =>
                 cn(
                   'rounded-full px-3.5 py-2 text-xs font-bold uppercase tracking-wider transition-colors',
-                  isActive ? 'text-white' : 'text-ink-400 hover:text-white',
+                  isActive ? 'text-ink-50' : 'text-ink-400 hover:text-ink-50',
                 )
               }
             >
@@ -126,7 +126,7 @@ export default function Header() {
               className={({ isActive }) =>
                 cn(
                   'border-b border-ink-800/70 py-3.5 text-sm font-bold uppercase tracking-wider',
-                  isActive ? 'text-brand-400' : 'text-ink-300',
+                  isActive ? 'text-brand-600' : 'text-ink-300',
                 )
               }
             >

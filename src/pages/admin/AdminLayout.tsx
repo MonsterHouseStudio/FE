@@ -49,7 +49,7 @@ export default function AdminLayout() {
       <aside className="hidden w-60 shrink-0 flex-col border-r border-ink-800 bg-ink-900 lg:flex">
         <div className="flex h-16 items-center gap-2.5 border-b border-ink-800 px-6 text-brand-500">
           <LogoMark className="h-6 w-6" />
-          <span className="font-display text-sm tracking-tightest text-white">
+          <span className="font-display text-sm tracking-tightest text-ink-50">
             MH ADMIN
           </span>
         </div>
@@ -65,7 +65,7 @@ export default function AdminLayout() {
                   'flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors',
                   isActive
                     ? 'bg-brand-600 text-white'
-                    : 'text-ink-400 hover:bg-ink-800 hover:text-white',
+                    : 'text-ink-400 hover:bg-ink-800 hover:text-ink-50',
                 )
               }
             >
@@ -79,21 +79,21 @@ export default function AdminLayout() {
           <div className="px-2 pb-3 text-xs text-ink-500">
             {displayName ?? username}
             {role === 'SUPER_ADMIN' && (
-              <span className="ml-1.5 rounded bg-brand-600/20 px-1.5 py-0.5 text-[10px] font-semibold text-brand-400">
+              <span className="ml-1.5 rounded bg-brand-600/20 px-1.5 py-0.5 text-[10px] font-semibold text-brand-600">
                 SUPER
               </span>
             )}
           </div>
           <Link
             to={`/${detectLocale()}`}
-            className="block rounded-lg px-4 py-2 text-xs font-semibold text-ink-400 hover:bg-ink-800 hover:text-white"
+            className="block rounded-lg px-4 py-2 text-xs font-semibold text-ink-400 hover:bg-ink-800 hover:text-ink-50"
           >
             ← {t('admin.backToSite')}
           </Link>
           <button
             type="button"
             onClick={logout}
-            className="mt-1 block w-full rounded-lg px-4 py-2 text-left text-xs font-semibold text-ink-400 hover:bg-ink-800 hover:text-white"
+            className="mt-1 block w-full rounded-lg px-4 py-2 text-left text-xs font-semibold text-ink-400 hover:bg-ink-800 hover:text-ink-50"
           >
             {t('admin.logout')}
           </button>
@@ -106,7 +106,7 @@ export default function AdminLayout() {
         <div className="flex items-center justify-between border-b border-ink-800 bg-ink-900 px-5 py-4 lg:hidden">
           <div className="flex items-center gap-2 text-brand-500">
             <LogoMark className="h-5 w-5" />
-            <span className="font-display text-sm text-white">MH ADMIN</span>
+            <span className="font-display text-sm text-ink-50">MH ADMIN</span>
           </div>
           <button onClick={logout} className="text-xs text-ink-400">
             {t('admin.logout')}
@@ -151,7 +151,7 @@ export function AdminPageHeader({
   return (
     <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="font-display text-2xl tracking-tightest text-white">{title}</h1>
+        <h1 className="font-display text-2xl tracking-tightest text-ink-50">{title}</h1>
         {desc && <p className="mt-2 text-sm text-ink-400">{desc}</p>}
       </div>
       {action}

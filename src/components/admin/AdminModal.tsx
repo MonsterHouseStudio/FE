@@ -61,7 +61,7 @@ export function AdminModal({
         }
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="font-display text-xl tracking-tightest text-white">{title}</h2>
+        <h2 className="font-display text-xl tracking-tightest text-ink-50">{title}</h2>
 
         <div className="mt-6 space-y-5">{children}</div>
 

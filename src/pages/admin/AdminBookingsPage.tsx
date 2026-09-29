@@ -81,7 +81,7 @@ export default function AdminBookingsPage() {
               'rounded-full border px-4 py-1.5 text-xs font-bold transition-colors',
               filter === f.key
                 ? 'border-brand-500 bg-brand-600 text-white'
-                : 'border-ink-800 text-ink-400 hover:text-white',
+                : 'border-ink-800 text-ink-400 hover:text-ink-50',
             )}
           >
             {f.label}
@@ -137,7 +137,7 @@ export default function AdminBookingsPage() {
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-white">{row.name}</span>
+                          <span className="font-semibold text-ink-50">{row.name}</span>
                           {row.locale === 'JA' && <Badge tone="neutral">JA</Badge>}
                         </div>
                         <div className="mt-0.5 text-xs text-ink-500">{row.phone}</div>
@@ -165,7 +165,7 @@ export default function AdminBookingsPage() {
                         <button
                           type="button"
                           onClick={() => setDetail(row)}
-                          className="text-xs font-bold text-brand-400 hover:underline"
+                          className="text-xs font-bold text-brand-600 hover:underline"
                         >
                           {t('common.more')}
                         </button>
@@ -268,7 +268,7 @@ function BookingDetailModal({
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="font-mono text-xs text-ink-500">{booking.bookingCode}</p>
-            <h2 className="mt-2 font-display text-xl tracking-tightest text-white">
+            <h2 className="mt-2 font-display text-xl tracking-tightest text-ink-50">
               {booking.name}
             </h2>
           </div>

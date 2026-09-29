@@ -144,7 +144,7 @@ export default function AdminBannersPage() {
                     {!b.headlineJa && b.headlineKo && <Badge tone="warning">일본어 미작성</Badge>}
                   </div>
 
-                  <p className="mt-2 font-semibold text-white">
+                  <p className="mt-2 font-semibold text-ink-50">
                     {b.headlineKo || <span className="text-ink-600">문구 없음 (기본값 사용)</span>}
                   </p>
                   {b.subtextKo && (

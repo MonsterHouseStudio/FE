@@ -103,17 +103,17 @@ export default function AdminCalendarPage() {
             <button
               type="button"
               onClick={() => move(-1)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-700 text-ink-300 hover:border-brand-500 hover:text-white"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-700 text-ink-300 hover:border-brand-500 hover:text-ink-50"
             >
               ‹
             </button>
-            <div className="font-display text-lg tracking-tightest text-white">
+            <div className="font-display text-lg tracking-tightest text-ink-50">
               {year}년 {month + 1}월
             </div>
             <button
               type="button"
               onClick={() => move(1)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-700 text-ink-300 hover:border-brand-500 hover:text-white"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-700 text-ink-300 hover:border-brand-500 hover:text-ink-50"
             >
               ›
             </button>
@@ -181,7 +181,7 @@ export default function AdminCalendarPage() {
                       className={cn(
                         'text-xs font-bold',
                         closed ? 'text-ink-700' : 'text-ink-200',
-                        isToday && 'text-brand-400',
+                        isToday && 'text-brand-600',
                       )}
                     >
                       {date.getDate()}
@@ -239,7 +239,7 @@ export default function AdminCalendarPage() {
                     key={day}
                     className="flex items-center justify-between gap-3 rounded-lg border border-ink-800 px-4 py-3"
                   >
-                    <span className="text-sm font-semibold text-white">{t(`days.${day}`)}</span>
+                    <span className="text-sm font-semibold text-ink-50">{t(`days.${day}`)}</span>
                     {row?.active && row.openTime && row.closeTime ? (
                       <span className="text-xs text-ink-300">
                         {row.openTime} – {row.closeTime}

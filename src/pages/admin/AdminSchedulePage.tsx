@@ -130,13 +130,13 @@ export default function AdminSchedulePage() {
                         </Badge>
                       </td>
                       <td className="px-5 py-4">
-                        <div className="font-semibold text-white">{tr?.name ?? '—'}</div>
+                        <div className="font-semibold text-ink-50">{tr?.name ?? '—'}</div>
                         {tr?.host && <div className="mt-0.5 text-xs text-ink-500">{tr.host}</div>}
                       </td>
                       <td className="whitespace-nowrap px-5 py-4 text-ink-200">
                         {formatDate(row.startDate, 'ko')}
                         <span
-                          className={`ml-2 text-xs ${d < 0 ? 'text-ink-600' : 'text-brand-400'}`}
+                          className={`ml-2 text-xs ${d < 0 ? 'text-ink-600' : 'text-brand-600'}`}
                         >
                           {d < 0
                             ? t('schedule.ended')
@@ -160,7 +160,7 @@ export default function AdminSchedulePage() {
                         <button
                           type="button"
                           onClick={() => setEditing({ id: row.id, form: toPayload(row) })}
-                          className="text-xs font-bold text-brand-400 hover:underline"
+                          className="text-xs font-bold text-brand-600 hover:underline"
                         >
                           {t('admin.actionEdit')}
                         </button>

@@ -33,7 +33,7 @@ export default function LanguageSwitcher({ className }: { className?: string }) 
             'rounded-full px-3 py-1 text-[11px] font-bold tracking-widest transition-colors',
             locale === current
               ? 'bg-brand-600 text-white'
-              : 'text-ink-400 hover:text-white',
+              : 'text-ink-400 hover:text-ink-50',
           )}
         >
           {LABELS[locale]}

@@ -40,7 +40,7 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center gap-3">
           <LogoMark className="h-12 w-12 text-brand-600" />
-          <h1 className="font-display text-xl tracking-tightest text-white">
+          <h1 className="font-display text-xl tracking-tightest text-ink-50">
             MONSTER HOUSE {t('admin.title')}
           </h1>
         </div>
@@ -104,7 +104,7 @@ export default function AdminLoginPage() {
         </form>
 
         <div className="mt-6 text-center">
-          <Link to={`/${detectLocale()}`} className="text-xs text-ink-500 hover:text-brand-400">
+          <Link to={`/${detectLocale()}`} className="text-xs text-ink-500 hover:text-brand-600">
             ← {t('admin.backToSite')}
           </Link>
         </div>

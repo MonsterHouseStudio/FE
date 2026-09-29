@@ -36,7 +36,7 @@ export default function AboutPage() {
               alt="MONSTER HOUSE"
               className="mt-6 h-28 w-auto sm:h-32 lg:h-36"
             />
-            <h1 className="heading-lg mt-8 text-white">{introTitle}</h1>
+            <h1 className="heading-lg mt-8 text-ink-50">{introTitle}</h1>
             <p className="mt-5 max-w-lg text-sm leading-relaxed text-ink-300 sm:text-base">
               {introDesc}
             </p>
@@ -63,9 +63,9 @@ export default function AboutPage() {
                     <Photo seed={member.id + 20} className="aspect-[4/5] w-full" />
                   )}
                   <div className="p-6">
-                    <h3 className="font-display text-lg tracking-tightest text-white">{member.name}</h3>
+                    <h3 className="font-display text-lg tracking-tightest text-ink-50">{member.name}</h3>
                     {member.role && (
-                      <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-brand-400">{member.role}</p>
+                      <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-brand-600">{member.role}</p>
                     )}
                     {member.bio && <p className="mt-4 text-sm leading-relaxed text-ink-400">{member.bio}</p>}
                   </div>
@@ -113,7 +113,7 @@ export default function AboutPage() {
                     </div>
                   </div>
                   <div className="p-5">
-                    <p className="text-sm font-semibold leading-snug text-white">{video.title || 'MONSTER HOUSE'}</p>
+                    <p className="text-sm font-semibold leading-snug text-ink-50">{video.title || 'MONSTER HOUSE'}</p>
                     <p className="mt-2 text-xs text-ink-500">MONSTER HOUSE</p>
                   </div>
                 </a>

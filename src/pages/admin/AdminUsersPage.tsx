@@ -115,9 +115,9 @@ export default function AdminUsersPage() {
                       <tr key={user.id} className="transition-colors hover:bg-ink-800/40">
                         <td className="px-5 py-4 font-mono text-xs text-ink-300">
                           {user.username}
-                          {isMe && <span className="ml-2 text-[10px] text-brand-400">(나)</span>}
+                          {isMe && <span className="ml-2 text-[10px] text-brand-600">(나)</span>}
                         </td>
-                        <td className="px-5 py-4 font-semibold text-white">{user.displayName}</td>
+                        <td className="px-5 py-4 font-semibold text-ink-50">{user.displayName}</td>
                         <td className="px-5 py-4">
                           <Badge tone={user.role === 'SUPER_ADMIN' ? 'brand' : 'neutral'}>
                             {ROLE_LABEL[user.role]}
