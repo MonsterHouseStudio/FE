@@ -51,15 +51,15 @@ export function AdminModal({
   return (
     <div
       className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-black/70 p-5"
-      onClick={close}
       role="dialog"
       aria-modal="true"
     >
+      {/* 배경 클릭으로는 닫지 않습니다 — 한/일 장시간 입력 중 오클릭으로
+          입력이 날아가는 걸 막기 위함. 닫기는 취소 버튼(또는 ESC)으로만. */}
       <div
         className={
           'surface my-8 w-full p-7 ' + (wide ? 'max-w-3xl' : 'max-w-lg')
         }
-        onClick={(e) => e.stopPropagation()}
       >
         <h2 className="font-display text-xl tracking-tightest text-ink-50">{title}</h2>
 
