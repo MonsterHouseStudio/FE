@@ -38,7 +38,7 @@ export default function MediaDetailPage() {
     return (
       <div className="container-mh flex flex-col items-center gap-6 py-28 text-center">
         <Badge tone="warning">{t('media.notTranslated')}</Badge>
-        <h1 className="heading-md text-white">{t('notFound.title')}</h1>
+        <h1 className="heading-md text-ink-50">{t('notFound.title')}</h1>
         <ButtonLink to={lp('/media')} variant="outline">
           {t('media.backToList')}
         </ButtonLink>
@@ -55,7 +55,7 @@ export default function MediaDetailPage() {
           <div className="container-mh py-14 sm:py-20">
             <Link
               to={lp('/media')}
-              className="text-xs font-bold uppercase tracking-wider text-ink-500 transition-colors hover:text-brand-400"
+              className="text-xs font-bold uppercase tracking-wider text-ink-500 transition-colors hover:text-brand-500"
             >
               ← {t('media.backToList')}
             </Link>
@@ -70,7 +70,7 @@ export default function MediaDetailPage() {
               </span>
             </div>
 
-            <h1 className="heading-lg mt-5 max-w-3xl text-white">{post.title}</h1>
+            <h1 className="heading-lg mt-5 max-w-3xl text-ink-50">{post.title}</h1>
           </div>
         </header>
 
@@ -105,10 +105,10 @@ export default function MediaDetailPage() {
               >
                 <Photo src={p.thumbnailUrl} seed={p.thumbnailSeed} alt={p.title} className="aspect-[16/10] w-full" />
                 <div className="p-6">
-                  <span className="text-[11px] uppercase tracking-wider text-brand-400">
+                  <span className="text-[11px] uppercase tracking-wider text-brand-500">
                     {p.series}
                   </span>
-                  <h3 className="mt-2 text-sm font-bold leading-snug text-white group-hover:text-brand-300">
+                  <h3 className="mt-2 text-sm font-bold leading-snug text-ink-50 group-hover:text-brand-600">
                     {p.title}
                   </h3>
                 </div>

@@ -172,7 +172,7 @@ function ScrollStats({ stats, title }: { stats: HomeStat[]; title: string }) {
   return (
     <section
       ref={wrapRef}
-      className="relative bg-ink-950"
+      className="theme-dark relative bg-ink-950"
       style={{ height: `${N * 100}vh` }}
       aria-label={title}
     >

@@ -202,7 +202,7 @@ export default function AdminGalleryPage() {
                               previewUrl: item.thumbUrl ?? item.imageUrl,
                             })
                           }
-                          className="text-[11px] text-ink-400 hover:text-white"
+                          className="text-[11px] text-ink-400 hover:text-ink-50"
                         >
                           {t('admin.actionEdit')}
                         </button>

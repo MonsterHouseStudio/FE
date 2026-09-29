@@ -10,7 +10,7 @@ export default function LogoMark({ className }: { className?: string }) {
       src="/mh-logo-mark.png"
       alt=""
       aria-hidden="true"
-      className={cn('h-8 w-8 object-contain', className)}
+      className={cn('logo-adaptive h-8 w-8 object-contain', className)}
     />
   )
 }

@@ -51,7 +51,7 @@ export default function MyBookingPage() {
   return (
     <div className="container-mh py-16 sm:py-24">
       <p className="eyebrow">{t('nav.booking')}</p>
-      <h1 className="heading-lg mt-4 text-white">{t('myBooking.title')}</h1>
+      <h1 className="heading-lg mt-4 text-ink-50">{t('myBooking.title')}</h1>
       <p className="mt-4 max-w-xl text-sm leading-relaxed text-ink-400">
         {t('myBooking.subtitle')}
       </p>
@@ -193,7 +193,7 @@ function BookingDetail({
 
       <div className="surface p-6 sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="font-display text-xl tracking-tightest text-white">
+          <span className="font-display text-xl tracking-tightest text-ink-50">
             {booking.bookingCode}
           </span>
           <Badge tone={tone}>{t(STATUS_KEY[booking.status])}</Badge>
@@ -217,7 +217,7 @@ function BookingDetail({
         <>
           {/* ---- 날짜·시간 변경 ---- */}
           <div className="surface p-6 sm:p-8">
-            <h2 className="font-display text-lg tracking-tightest text-white">
+            <h2 className="font-display text-lg tracking-tightest text-ink-50">
               {t('myBooking.rescheduleTitle')}
             </h2>
             <p className="mt-2 text-xs text-ink-500">{t('myBooking.rescheduleNote')}</p>
@@ -278,7 +278,7 @@ function BookingDetail({
 
           {/* ---- 취소 ---- */}
           <div className="surface p-6 sm:p-8">
-            <h2 className="font-display text-lg tracking-tightest text-white">
+            <h2 className="font-display text-lg tracking-tightest text-ink-50">
               {t('myBooking.cancelTitle')}
             </h2>
 
@@ -312,7 +312,7 @@ function BookingDetail({
         </>
       )}
 
-      <button type="button" onClick={onReset} className="text-xs text-ink-400 hover:text-white">
+      <button type="button" onClick={onReset} className="text-xs text-ink-400 hover:text-ink-50">
         ← {t('myBooking.another')}
       </button>
     </div>

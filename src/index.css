@@ -3,8 +3,59 @@
 @tailwind utilities;
 
 @layer base {
+  /* ── 테마 토큰 ─────────────────────────────────────────────
+     기본 = 다크. html.light 를 붙이면 화이트(라이트) 모드.
+     ink 스케일: 낮은 번호 = 텍스트, 높은 번호 = 배경.
+     다크에선 50=밝음/950=어두움, 라이트에선 반대로 스왑. */
   :root {
     color-scheme: dark;
+    --ink-50: 247 247 248;
+    --ink-100: 233 233 236;
+    --ink-200: 201 201 208;
+    --ink-300: 154 154 165;
+    --ink-400: 107 107 120;
+    --ink-500: 74 74 85;
+    --ink-600: 51 51 60;
+    --ink-700: 35 35 41;
+    --ink-800: 23 23 25;
+    --ink-900: 14 14 16;
+    --ink-950: 8 8 10;
+  }
+
+  :root.light {
+    color-scheme: light;
+    --ink-50: 20 20 23; /* 가장 진한 텍스트 */
+    --ink-100: 33 33 38;
+    --ink-200: 52 52 60;
+    --ink-300: 86 86 96;
+    --ink-400: 112 112 124;
+    --ink-500: 140 140 152;
+    --ink-600: 176 176 187;
+    --ink-700: 214 214 220; /* 테두리 */
+    --ink-800: 230 230 235;
+    --ink-900: 243 243 246; /* 서피스/카드 */
+    --ink-950: 250 250 251; /* 페이지 배경(화이트) */
+  }
+
+  html {
+    transition: background-color 0.3s ease;
+  }
+
+  /* 항상 다크로 유지할 영역(히어로·숫자 섹션 등)에 씌움 →
+     라이트 모드여도 내부 ink 색이 다크 값으로 고정됨 */
+  .theme-dark {
+    color-scheme: dark;
+    --ink-50: 247 247 248;
+    --ink-100: 233 233 236;
+    --ink-200: 201 201 208;
+    --ink-300: 154 154 165;
+    --ink-400: 107 107 120;
+    --ink-500: 74 74 85;
+    --ink-600: 51 51 60;
+    --ink-700: 35 35 41;
+    --ink-800: 23 23 25;
+    --ink-900: 14 14 16;
+    --ink-950: 8 8 10;
   }
 
   html {
@@ -77,7 +128,7 @@
   }
 
   .eyebrow {
-    @apply font-poster text-sm uppercase tracking-[0.28em] text-brand-400;
+    @apply font-poster text-sm uppercase tracking-[0.28em] text-brand-500;
   }
 
   .surface {
@@ -169,6 +220,43 @@
 
   /* 갤러리/미디어 이미지 자리 — 외부 이미지 없이도 시각적 밀도를 만듭니다 */
   .photo-ph {
-    @apply relative overflow-hidden bg-gradient-to-br from-ink-800 via-ink-900 to-black;
+    @apply relative overflow-hidden bg-gradient-to-br from-ink-800 via-ink-900 to-ink-700;
+  }
+
+  /* 로고: 흰색 PNG. 라이트 모드에선 어둡게 반전(다크 히어로 워터마크는 이 클래스 미사용) */
+  .logo-adaptive {
+    transition: filter 0.3s ease;
+  }
+  :root.light .logo-adaptive {
+    filter: brightness(0) saturate(100%);
+  }
+  /* 항상-다크 영역(히어로 등) 안의 로고는 라이트 모드여도 흰색 유지 */
+  .theme-dark .logo-adaptive {
+    filter: none;
+  }
+
+  /* 라이트 모드용 글래스 카드 (기본 다크 정의를 덮어씀) */
+  :root.light .glass-red {
+    border-color: rgba(184, 31, 31, 0.18);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.75),
+      rgba(250, 244, 242, 0.9) 55%,
+      rgba(246, 230, 228, 0.95)
+    );
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.8),
+      0 10px 30px -18px rgba(90, 20, 20, 0.35);
+  }
+  :root.light .glass-red::before {
+    background: linear-gradient(90deg, transparent, rgba(184, 31, 31, 0.25), transparent);
+  }
+  :root.light .glass-red-hover:hover {
+    border-color: rgba(184, 31, 31, 0.45);
+    box-shadow:
+      0 0 40px -12px rgba(225, 29, 42, 0.3),
+      0 16px 40px -20px rgba(90, 20, 20, 0.4);
   }
 }

@@ -75,7 +75,7 @@ export default function SchedulePage() {
                 className={cn(
                   'rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors',
                   country === f.key
-                    ? 'border-brand-500 text-white'
+                    ? 'border-brand-500 text-ink-50'
                     : 'border-ink-800 text-ink-500 hover:text-ink-200',
                 )}
               >
@@ -107,7 +107,7 @@ export default function SchedulePage() {
                   {/* 날짜 블록 */}
                   <div className="flex flex-row items-center gap-4 border-ink-800 sm:flex-col sm:items-start sm:border-r sm:pr-6">
                     <div>
-                      <div className="font-display text-3xl leading-none tracking-tightest text-white">
+                      <div className="font-display text-3xl leading-none tracking-tightest text-ink-50">
                         {new Date(comp.startDate).getDate()}
                       </div>
                       <div className="mt-1.5 text-[11px] uppercase tracking-[0.2em] text-ink-500">
@@ -142,7 +142,7 @@ export default function SchedulePage() {
                       </span>
                     </div>
 
-                    <h2 className="mt-3 font-display text-xl tracking-tightest text-white sm:text-2xl">
+                    <h2 className="mt-3 font-display text-xl tracking-tightest text-ink-50 sm:text-2xl">
                       {comp.name}
                     </h2>
                     <p className="mt-3 text-sm leading-relaxed text-ink-400">{comp.description}</p>

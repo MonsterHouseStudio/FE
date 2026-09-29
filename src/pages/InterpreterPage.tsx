@@ -95,7 +95,7 @@ export default function InterpreterPage() {
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-600 text-3xl text-white">
                   ✓
                 </div>
-                <h2 className="heading-md mt-7 text-white">{t('interpreter.doneTitle')}</h2>
+                <h2 className="heading-md mt-7 text-ink-50">{t('interpreter.doneTitle')}</h2>
                 <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-ink-300">
                   {t('interpreter.doneDesc')}
                 </p>
@@ -113,7 +113,7 @@ export default function InterpreterPage() {
               </div>
             ) : (
               <>
-                <h2 className="heading-md text-white">{t('interpreter.formTitle')}</h2>
+                <h2 className="heading-md text-ink-50">{t('interpreter.formTitle')}</h2>
 
                 <form onSubmit={submit} className="surface mt-6 space-y-6 p-6 sm:p-8" noValidate>
                   {/* 문의 유형 */}
@@ -133,7 +133,7 @@ export default function InterpreterPage() {
                           className={cn(
                             'rounded-lg border px-5 py-4 text-sm font-semibold transition-colors',
                             form.type === opt.key
-                              ? 'border-brand-500 bg-brand-600/15 text-white'
+                              ? 'border-brand-500 bg-brand-600/15 text-ink-50'
                               : 'border-ink-700 text-ink-300 hover:border-ink-500',
                           )}
                         >
@@ -229,7 +229,7 @@ export default function InterpreterPage() {
                     <p className="mt-3 pl-7 text-xs text-ink-500">
                       <Link
                         to={lp('/privacy')}
-                        className="text-brand-400 underline underline-offset-2"
+                        className="text-brand-500 underline underline-offset-2"
                       >
                         {t('booking.privacyLink')}
                       </Link>
@@ -260,8 +260,8 @@ export default function InterpreterPage() {
                   {interpreterPlans.map((plan) => (
                     <li key={plan.id} className="border-b border-ink-800 pb-5 last:border-0 last:pb-0">
                       <div className="flex items-start justify-between gap-3">
-                        <span className="text-sm font-bold text-white">{plan.name}</span>
-                        <span className="shrink-0 font-display text-base tracking-tightest text-brand-300">
+                        <span className="text-sm font-bold text-ink-50">{plan.name}</span>
+                        <span className="shrink-0 font-display text-base tracking-tightest text-brand-600">
                           {formatProductPrice(plan, locale, t)}
                         </span>
                       </div>
@@ -290,10 +290,10 @@ export default function InterpreterPage() {
             )}
 
             <div className="surface border-[#06C755]/30 bg-[#06C755]/5 p-7">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#06C755] font-display text-sm text-white">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#06C755] font-display text-sm text-ink-50">
                 LINE
               </div>
-              <h3 className="mt-5 font-display text-lg tracking-tightest text-white">
+              <h3 className="mt-5 font-display text-lg tracking-tightest text-ink-50">
                 {t('interpreter.lineTitle')}
               </h3>
               <p className="mt-3 text-sm leading-relaxed text-ink-300">

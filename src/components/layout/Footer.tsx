@@ -38,8 +38,8 @@ export default function Footer() {
       <div className="container-mh grid gap-12 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
           <div className="flex items-center gap-2.5 text-brand-500">
-            <img src="/mh-logo-mark.png" alt="" className="h-8 w-8 object-contain" />
-            <span className="font-display text-lg tracking-tightest text-white">
+            <img src="/mh-logo-mark.png" alt="" className="logo-adaptive h-8 w-8 object-contain" />
+            <span className="font-display text-lg tracking-tightest text-ink-50">
               MONSTER HOUSE
             </span>
           </div>
@@ -49,7 +49,7 @@ export default function Footer() {
               href={YOUTUBE}
               target="_blank"
               rel="noreferrer noopener"
-              className="rounded-full border border-ink-700 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-ink-300 transition-colors hover:border-brand-500 hover:text-white"
+              className="rounded-full border border-ink-700 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-ink-300 transition-colors hover:border-brand-500 hover:text-ink-50"
             >
               {t('footer.youtube')}
             </a>
@@ -57,7 +57,7 @@ export default function Footer() {
               href={LINE}
               target="_blank"
               rel="noreferrer noopener"
-              className="rounded-full border border-ink-700 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-ink-300 transition-colors hover:border-brand-500 hover:text-white"
+              className="rounded-full border border-ink-700 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-ink-300 transition-colors hover:border-brand-500 hover:text-ink-50"
             >
               {t('footer.line')}
             </a>
@@ -65,7 +65,7 @@ export default function Footer() {
               href="https://instagram.com"
               target="_blank"
               rel="noreferrer noopener"
-              className="rounded-full border border-ink-700 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-ink-300 transition-colors hover:border-brand-500 hover:text-white"
+              className="rounded-full border border-ink-700 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-ink-300 transition-colors hover:border-brand-500 hover:text-ink-50"
             >
               {t('footer.instagram')}
             </a>
@@ -81,7 +81,7 @@ export default function Footer() {
               <li key={item.key}>
                 <Link
                   to={lp(item.path)}
-                  className="text-sm text-ink-300 transition-colors hover:text-brand-400"
+                  className="text-sm text-ink-300 transition-colors hover:text-brand-500"
                 >
                   {t(`nav.${item.key}`)}
                 </Link>
@@ -101,7 +101,7 @@ export default function Footer() {
               </span>
               <a
                 href="mailto:monsterhousejo@gmail.com"
-                className="transition-colors hover:text-brand-400"
+                className="transition-colors hover:text-brand-500"
               >
                 monsterhousejo@gmail.com
               </a>
@@ -115,13 +115,13 @@ export default function Footer() {
             <li className="pt-2">
               <Link
                 to={lp('/shooting/booking/lookup')}
-                className="text-ink-400 underline-offset-4 hover:text-brand-400 hover:underline"
+                className="text-ink-400 underline-offset-4 hover:text-brand-500 hover:underline"
               >
                 {t('myBooking.title')}
               </Link>
             </li>
             <li>
-              <Link to={lp('/privacy')} className="text-ink-400 underline-offset-4 hover:text-brand-400 hover:underline">
+              <Link to={lp('/privacy')} className="text-ink-400 underline-offset-4 hover:text-brand-500 hover:underline">
                 {t('footer.privacy')}
               </Link>
             </li>

@@ -164,7 +164,7 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
   return (
     <section
       // main 의 pt-16/pt-20 을 되돌려 헤더 뒤까지 화면을 꽉 채웁니다.
-      className="relative -mt-16 sm:-mt-20"
+      className="theme-dark relative -mt-16 sm:-mt-20"
       aria-roledescription="carousel"
       aria-label={t('home.heroCarousel')}
       onMouseEnter={() => setHovered(true)}

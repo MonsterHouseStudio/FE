@@ -88,12 +88,12 @@ export default function HomePage() {
                   </div>
                   <div className="flex flex-1 flex-col p-4 sm:p-6">
                     <div className="flex items-center gap-2">
-                      <span className="font-display text-xs text-brand-300">
+                      <span className="font-display text-xs text-brand-600">
                         0{i + 1}
                       </span>
                       <Badge tone="brand">{t('common.minutes', { count: product.durationMin })}</Badge>
                     </div>
-                    <h3 className="mt-3 font-display text-base tracking-tightest text-white sm:text-xl">
+                    <h3 className="mt-3 font-display text-base tracking-tightest text-ink-50 sm:text-xl">
                       {product.name}
                     </h3>
                     {/* 2열에서 설명이 길면 카드 높이가 들쭉날쭉해지므로 모바일은 2줄로 자릅니다. */}
@@ -102,10 +102,10 @@ export default function HomePage() {
                     </p>
                     {/* 좁은 폭에서 가격과 CTA 가 한 줄에 안 들어가면 줄바꿈되게 둡니다. */}
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-white/10 pt-3 sm:mt-6 sm:pt-4">
-                      <span className="font-display text-base tracking-tightest text-white sm:text-lg">
+                      <span className="font-display text-base tracking-tightest text-ink-50 sm:text-lg">
                         {formatPrice(product.price, locale)}
                       </span>
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-brand-300 transition-transform group-hover:translate-x-1 sm:text-xs">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-brand-600 transition-transform group-hover:translate-x-1 sm:text-xs">
                         {t('shooting.book')} →
                       </span>
                     </div>
@@ -122,7 +122,7 @@ export default function HomePage() {
         <div className="container-mh grid gap-12 py-20 sm:py-28 lg:grid-cols-2 lg:items-center">
           <div>
             <p className="eyebrow">{t('home.bridgeEyebrow')}</p>
-            <h2 className="heading-md mt-4 whitespace-pre-line text-white">
+            <h2 className="heading-md mt-4 whitespace-pre-line text-ink-50">
               {t('home.bridgeTitle')}
             </h2>
             <p className="mt-6 max-w-lg text-sm leading-relaxed text-ink-300">
@@ -143,10 +143,10 @@ export default function HomePage() {
               { code: 'JP', label: 'TOKYO', sub: t('schedule.japan') },
             ].map((item) => (
               <div key={item.label} className="surface p-6 sm:p-8">
-                <div className="inline-flex h-10 items-center rounded-lg border border-brand-700/60 bg-brand-950/60 px-3 font-display text-sm tracking-[0.15em] text-brand-300">
+                <div className="inline-flex h-10 items-center rounded-lg border border-brand-700/60 bg-brand-950/60 px-3 font-display text-sm tracking-[0.15em] text-brand-600">
                   {item.code}
                 </div>
-                <div className="mt-4 font-display text-xl tracking-tightest text-white sm:text-2xl">
+                <div className="mt-4 font-display text-xl tracking-tightest text-ink-50 sm:text-2xl">
                   {item.label}
                 </div>
                 <div className="mt-1 text-xs uppercase tracking-[0.2em] text-ink-500">
@@ -185,7 +185,7 @@ export default function HomePage() {
                 className="aspect-[3/4] w-full transition-transform duration-500 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-              <p className="absolute bottom-3 left-3 right-3 translate-y-2 text-[11px] leading-snug text-white opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
+              <p className="absolute bottom-3 left-3 right-3 translate-y-2 text-[11px] leading-snug text-ink-50 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
                 {item.caption}
               </p>
             </Link>
@@ -227,7 +227,7 @@ export default function HomePage() {
                       {formatDateShort(comp.startDate, locale)}
                     </span>
                   </div>
-                  <h3 className="mt-2 truncate text-base font-bold text-white">{comp.name}</h3>
+                  <h3 className="mt-2 truncate text-base font-bold text-ink-50">{comp.name}</h3>
                   <p className="mt-1 truncate text-xs text-ink-400">{comp.place}</p>
                 </div>
                 <span className="hidden text-xs font-bold uppercase tracking-wider text-ink-500 sm:block">
@@ -258,12 +258,12 @@ export default function HomePage() {
             >
               <Photo src={post.thumbnailUrl} seed={post.thumbnailSeed} alt={post.title} className="aspect-[16/10] w-full" />
               <div className="p-6">
-                <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-brand-400">
+                <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-brand-500">
                   <span>{post.series}</span>
                   <span className="text-ink-700">·</span>
                   <span className="text-ink-500">{formatDate(post.publishedAt, locale)}</span>
                 </div>
-                <h3 className="mt-3 text-base font-bold leading-snug text-white group-hover:text-brand-300">
+                <h3 className="mt-3 text-base font-bold leading-snug text-ink-50 group-hover:text-brand-600">
                   {post.title}
                 </h3>
                 <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-ink-400">
@@ -279,7 +279,7 @@ export default function HomePage() {
       <section className="border-t border-ink-800 bg-brand-950/40">
         <div className="container-mh flex flex-col items-center gap-7 py-20 text-center sm:py-28">
           <LogoMark className="h-12 w-12 text-brand-600" />
-          <h2 className="heading-md max-w-2xl text-white">{t('home.ctaTitle')}</h2>
+          <h2 className="heading-md max-w-2xl text-ink-50">{t('home.ctaTitle')}</h2>
           <p className="max-w-md text-sm text-ink-400">{t('home.ctaDesc')}</p>
           <ButtonLink to={lp('/shooting/booking')} size="lg">
             {t('home.heroCta')}

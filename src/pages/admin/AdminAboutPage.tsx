@@ -37,7 +37,7 @@ export default function AdminAboutPage() {
 function SectionTitle({ children, action }: { children: React.ReactNode; action?: React.ReactNode }) {
   return (
     <div className="mb-4 flex items-center justify-between border-b border-ink-800 pb-2">
-      <h2 className="font-display text-lg tracking-tight text-white">{children}</h2>
+      <h2 className="font-display text-lg tracking-tight text-ink-50">{children}</h2>
       {action}
     </div>
   )
@@ -252,8 +252,8 @@ function CrewSection() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-display text-base tracking-tight text-white">{c.nameKo}</span>
-                    <span className="text-xs uppercase tracking-[0.15em] text-brand-400">{c.roleKo}</span>
+                    <span className="font-display text-base tracking-tight text-ink-50">{c.nameKo}</span>
+                    <span className="text-xs uppercase tracking-[0.15em] text-brand-500">{c.roleKo}</span>
                     {!c.active && <Badge tone="warning">비활성</Badge>}
                   </div>
                   {c.bioKo && <p className="mt-1 line-clamp-1 text-xs text-ink-500">{c.bioKo}</p>}
@@ -476,7 +476,7 @@ function VideoSection() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-semibold text-white">{v.titleKo || '(제목 없음)'}</span>
+                    <span className="text-sm font-semibold text-ink-50">{v.titleKo || '(제목 없음)'}</span>
                     {!v.active && <Badge tone="warning">비활성</Badge>}
                   </div>
                   <p className="mt-1 line-clamp-1 text-[11px] text-ink-600">{v.youtubeUrl}</p>
