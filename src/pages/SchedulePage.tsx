@@ -37,6 +37,7 @@ export default function SchedulePage() {
     { key: 'ALL', label: t('common.all') },
     { key: 'KR', label: t('schedule.korea') },
     { key: 'JP', label: t('schedule.japan') },
+    { key: 'OVERSEAS', label: t('schedule.overseas') },
   ]
 
   return (
@@ -133,8 +134,22 @@ export default function SchedulePage() {
                   {/* 본문 */}
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <Badge tone={comp.country === 'KR' ? 'brand' : 'neutral'}>
-                        {comp.country === 'KR' ? t('schedule.korea') : t('schedule.japan')}
+                      <Badge
+                        tone={
+                          comp.country === 'KR'
+                            ? 'brand'
+                            : comp.country === 'JP'
+                              ? 'neutral'
+                              : 'warning'
+                        }
+                      >
+                        {t(
+                          comp.country === 'KR'
+                            ? 'schedule.korea'
+                            : comp.country === 'JP'
+                              ? 'schedule.japan'
+                              : 'schedule.overseas',
+                        )}
                       </Badge>
                       <span className="text-xs text-ink-500">
                         {formatDate(comp.startDate, locale)}

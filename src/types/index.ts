@@ -94,7 +94,7 @@ export interface BookingCreatePayload {
   website?: string
 }
 
-export type Country = 'KR' | 'JP'
+export type Country = 'KR' | 'JP' | 'OVERSEAS'
 
 export interface Competition {
   id: number

@@ -545,6 +545,13 @@ export const adminApi = {
       body: JSON.stringify(payload),
     }),
 
+  /** 엑셀 일괄 등록. 생성된 건수를 반환. */
+  bulkCreateCompetitions: (items: CompetitionSavePayload[]) =>
+    adminRequest<number>('/admin/competitions/bulk', {
+      method: 'POST',
+      body: JSON.stringify({ items }),
+    }),
+
   updateCompetition: (id: number, payload: CompetitionSavePayload) =>
     adminRequest<AdminCompetition>(`/admin/competitions/${id}`, {
       method: 'PUT',

@@ -196,7 +196,8 @@
     "link": "大会情報",
     "dday": "あと{{days}}日",
     "ddayToday": "本日",
-    "ended": "終了"
+    "ended": "終了",
+    "overseas": "海外"
   },
   "interpreter": {
     "title": "通訳申込",

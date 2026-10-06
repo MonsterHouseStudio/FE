@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAsync } from '@/hooks/useAsync'
 import { adminApi } from '@/lib/api'
 import { daysUntil, formatDate } from '@/lib/utils'
+import { parseCompetitionExcel, type ParsedCompetitions } from '@/lib/competitionExcel'
 import type {
   AdminCompetition,
   CompetitionSavePayload,
@@ -57,6 +58,40 @@ export default function AdminSchedulePage() {
     form: CompetitionSavePayload
   } | null>(null)
 
+  // 엑셀 일괄 등록
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [parsed, setParsed] = useState<ParsedCompetitions | null>(null)
+  const [importOpen, setImportOpen] = useState(false)
+  const [importMsg, setImportMsg] = useState<string | null>(null)
+
+  const onPickFile = async (file?: File) => {
+    if (!file) return
+    setActionError(null)
+    setImportMsg(null)
+    try {
+      const res = await parseCompetitionExcel(file)
+      if (res.items.length === 0) {
+        setActionError('엑셀에서 등록할 일정을 찾지 못했습니다. 시트·컬럼 형식을 확인해주세요.')
+        return
+      }
+      setParsed(res)
+      setImportOpen(true)
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : '엑셀을 읽지 못했습니다.')
+    } finally {
+      if (fileRef.current) fileRef.current.value = ''
+    }
+  }
+
+  const doImport = async () => {
+    if (!parsed) return
+    const n = await adminApi.bulkCreateCompetitions(parsed.items)
+    setImportOpen(false)
+    setParsed(null)
+    setImportMsg(`${n.toLocaleString()}건을 등록했습니다.`)
+    reload()
+  }
+
   const rows = [...(data ?? [])].sort((a, b) => b.startDate.localeCompare(a.startDate))
 
   const remove = async (row: AdminCompetition) => {
@@ -80,11 +115,102 @@ export default function AdminSchedulePage() {
         title={t('admin.schedule')}
         desc={data ? `전체 ${data.length}건` : undefined}
         action={
-          <Button size="sm" onClick={() => setEditing({ id: null, form: emptyCompetition() })}>
-            + {t('admin.actionAdd')}
-          </Button>
+          <div className="flex gap-2">
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".xlsx,.xls"
+              className="hidden"
+              onChange={(e) => void onPickFile(e.target.files?.[0])}
+            />
+            <Button size="sm" variant="outline" onClick={() => fileRef.current?.click()}>
+              엑셀 일괄 등록
+            </Button>
+            <Button size="sm" onClick={() => setEditing({ id: null, form: emptyCompetition() })}>
+              + {t('admin.actionAdd')}
+            </Button>
+          </div>
         }
       />
+
+      {importMsg && (
+        <p className="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-xs text-emerald-300">
+          {importMsg}
+        </p>
+      )}
+
+      {importOpen && parsed && (
+        <AdminModal
+          title="엑셀 일괄 등록 미리보기"
+          onClose={() => setImportOpen(false)}
+          onSubmit={doImport}
+          submitLabel={`${parsed.items.length.toLocaleString()}건 등록`}
+          wide
+        >
+          <p className="text-sm text-ink-300">
+            <span className="font-bold text-ink-50">{parsed.year}년</span> 일정{' '}
+            <span className="font-bold text-ink-50">{parsed.items.length.toLocaleString()}건</span>을
+            등록합니다. (중복 제거 완료)
+          </p>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div className="surface p-4 text-center">
+              <div className="text-xs text-ink-500">한국</div>
+              <div className="mt-1 font-display text-2xl text-ink-50">{parsed.byCountry.KR}</div>
+            </div>
+            <div className="surface p-4 text-center">
+              <div className="text-xs text-ink-500">일본</div>
+              <div className="mt-1 font-display text-2xl text-ink-50">{parsed.byCountry.JP}</div>
+            </div>
+            <div className="surface p-4 text-center">
+              <div className="text-xs text-ink-500">해외</div>
+              <div className="mt-1 font-display text-2xl text-ink-50">
+                {parsed.byCountry.OVERSEAS}
+              </div>
+            </div>
+          </div>
+
+          <Field label="시트별 건수">
+            <div className="flex flex-wrap gap-2">
+              {parsed.bySheet.map((s) => (
+                <span
+                  key={s.name}
+                  className="rounded-full border border-ink-700 px-3 py-1 text-xs text-ink-200"
+                >
+                  {s.name} {s.count}
+                </span>
+              ))}
+            </div>
+          </Field>
+
+          <Field label="미리보기 (상위 8건)">
+            <div className="max-h-60 overflow-y-auto rounded-lg border border-ink-800">
+              <table className="w-full text-xs">
+                <tbody className="divide-y divide-ink-800">
+                  {parsed.items.slice(0, 8).map((it, i) => {
+                    const tr = it.translations[0]
+                    const c =
+                      it.country === 'KR' ? '한국' : it.country === 'JP' ? '일본' : '해외'
+                    return (
+                      <tr key={i}>
+                        <td className="whitespace-nowrap px-3 py-2 text-ink-400">{it.startDate}</td>
+                        <td className="px-3 py-2 text-ink-400">{c}</td>
+                        <td className="px-3 py-2 text-ink-100">{tr?.name}</td>
+                        <td className="px-3 py-2 text-ink-400">{tr?.place}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </Field>
+
+          <p className="text-[11px] leading-relaxed text-ink-500">
+            · 날짜는 {parsed.year}년으로 입력되며, 모두 <b>공개</b> 상태로 등록됩니다.<br />
+            · 일본어 번역은 비어 있어 일본어 페이지에는 표시되지 않습니다(관리자에서 추후 추가 가능).
+          </p>
+        </AdminModal>
+      )}
 
       {actionError && (
         <p
@@ -125,8 +251,18 @@ export default function AdminSchedulePage() {
                   return (
                     <tr key={row.id} className="transition-colors hover:bg-ink-800/40">
                       <td className="px-5 py-4">
-                        <Badge tone={row.country === 'KR' ? 'brand' : 'neutral'}>
-                          {row.country === 'KR' ? t('schedule.korea') : t('schedule.japan')}
+                        <Badge
+                          tone={
+                            row.country === 'KR' ? 'brand' : row.country === 'JP' ? 'neutral' : 'warning'
+                          }
+                        >
+                          {t(
+                            row.country === 'KR'
+                              ? 'schedule.korea'
+                              : row.country === 'JP'
+                                ? 'schedule.japan'
+                                : 'schedule.overseas',
+                          )}
                         </Badge>
                       </td>
                       <td className="px-5 py-4">
@@ -272,6 +408,7 @@ function CompetitionForm({
           >
             <option value="KR">한국</option>
             <option value="JP">일본</option>
+            <option value="OVERSEAS">해외</option>
           </select>
         </Field>
         <Field label="시작일">

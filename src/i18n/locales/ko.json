@@ -196,7 +196,8 @@
     "link": "대회 정보",
     "dday": "D-{{days}}",
     "ddayToday": "오늘",
-    "ended": "종료"
+    "ended": "종료",
+    "overseas": "해외"
   },
   "interpreter": {
     "title": "통역 신청",
