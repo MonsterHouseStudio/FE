@@ -11,6 +11,7 @@ import type { Booking, Product } from '@/types'
 import Calendar from '@/components/booking/Calendar'
 import { Button, ButtonLink } from '@/components/ui/Button'
 import { Badge, PageHeader, Photo, Spinner } from '@/components/ui/primitives'
+import { useMemberAuth } from '@/store/memberAuth'
 
 type Step = 1 | 2 | 3 | 4
 
@@ -43,7 +44,13 @@ export default function BookingPage() {
   const [productId, setProductId] = useState<number | null>(null)
   const [dateKey, setDateKey] = useState<string | null>(null)
   const [startAt, setStartAt] = useState<string | null>(null)
-  const [form, setForm] = useState<FormState>(EMPTY_FORM)
+  const member = useMemberAuth((s) => s.member)
+  // 로그인한 회원이면 이름·연락처·이메일을 자동으로 채웁니다.
+  const [form, setForm] = useState<FormState>(() =>
+    member
+      ? { ...EMPTY_FORM, name: member.name, phone: member.phone, email: member.email }
+      : EMPTY_FORM,
+  )
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({})
   const [result, setResult] = useState<Booking | null>(null)
   /** optionId → 수량. 0 이거나 없으면 미선택입니다. */

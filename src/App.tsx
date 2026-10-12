@@ -12,6 +12,9 @@ import { Spinner } from '@/components/ui/primitives'
 const ShootingPage = lazy(() => import('@/pages/ShootingPage'))
 const BookingPage = lazy(() => import('@/pages/BookingPage'))
 const MyBookingPage = lazy(() => import('@/pages/MyBookingPage'))
+const LoginPage = lazy(() => import('@/pages/LoginPage'))
+const SignupPage = lazy(() => import('@/pages/SignupPage'))
+const MyPage = lazy(() => import('@/pages/MyPage'))
 const SchedulePage = lazy(() => import('@/pages/SchedulePage'))
 const InterpreterPage = lazy(() => import('@/pages/InterpreterPage'))
 const GalleryPage = lazy(() => import('@/pages/GalleryPage'))
@@ -93,6 +96,9 @@ export default function App() {
             <Route path="shooting" element={<ShootingPage />} />
             <Route path="shooting/booking" element={<BookingPage />} />
             <Route path="shooting/booking/lookup" element={<MyBookingPage />} />
+            <Route path="login" element={<LoginPage />} />
+            <Route path="signup" element={<SignupPage />} />
+            <Route path="mypage" element={<MyPage />} />
             <Route path="schedule" element={<SchedulePage />} />
             <Route path="interpreter" element={<InterpreterPage />} />
             <Route path="gallery" element={<GalleryPage />} />

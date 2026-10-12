@@ -49,6 +49,7 @@ import type {
 } from '@/types'
 import { COMPETITIONS, POSTS, PRODUCTS, galleryItems } from '@/mocks/data'
 import { currentAccessToken, refreshAccessToken } from '@/store/adminAuth'
+import { currentMemberToken, type MemberInfo } from '@/store/memberAuth'
 import { delay, toDateKey } from './utils'
 import { BOOKING_POLICY, latestBookableDate } from './bookingPolicy'
 
@@ -759,4 +760,21 @@ export const adminApi = {
 
   deleteOverride: (id: number) =>
     adminRequest<void>(`/admin/availability/overrides/${id}`, { method: 'DELETE' }),
+}
+
+// =====================================================================
+//  고객 회원 API (마이페이지)
+// =====================================================================
+
+function memberAuthHeader(): Record<string, string> {
+  const token = currentMemberToken()
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+export const memberApi = {
+  getMe: (locale: Locale) =>
+    request<MemberInfo>('/members/me', locale, { headers: memberAuthHeader() }),
+
+  getMyBookings: (locale: Locale) =>
+    request<Booking[]>('/members/me/bookings', locale, { headers: memberAuthHeader() }),
 }

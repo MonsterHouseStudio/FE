@@ -365,5 +365,27 @@
     "policyDeposit": "예약 시 결제금의 50%를 예약금으로 입금하시면 스케줄이 확정됩니다. 잔금은 촬영일 2주 전까지 입금해 주세요.",
     "policyImminent": "촬영일이 2주 이내인 경우 전액을 한 번에 입금해 주세요.",
     "policyRefund": "스튜디오 귀책 사유가 아닌 경우 환불이 어렵습니다."
+  },
+  "member": {
+    "login": "로그인",
+    "signup": "회원가입",
+    "email": "이메일",
+    "password": "비밀번호",
+    "name": "이름",
+    "phone": "연락처",
+    "loginCta": "로그인",
+    "signupCta": "회원가입",
+    "noAccount": "계정이 없으신가요?",
+    "haveAccount": "이미 계정이 있으신가요?",
+    "mypage": "마이페이지",
+    "logout": "로그아웃",
+    "myBookings": "예약 내역",
+    "welcome": "님",
+    "noBookings": "예약 내역이 없습니다.",
+    "goBooking": "촬영 예약하기",
+    "lookupHint": "예약번호로 조회하려면",
+    "loginFail": "로그인에 실패했습니다.",
+    "signupFail": "회원가입에 실패했습니다.",
+    "passwordRule": "비밀번호는 8자 이상이어야 합니다."
   }
 }

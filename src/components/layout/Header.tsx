@@ -5,6 +5,7 @@ import { useLocale, useLocalePath } from '@/hooks/useLocale'
 import { cn } from '@/lib/utils'
 import LanguageSwitcher from './LanguageSwitcher'
 import ThemeToggle from './ThemeToggle'
+import { useMemberAuth } from '@/store/memberAuth'
 
 const NAV = [
   { key: 'shooting', path: '/shooting' },
@@ -22,6 +23,7 @@ export default function Header() {
   const { pathname } = useLocation()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const member = useMemberAuth((s) => s.member)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16)
@@ -75,6 +77,12 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <ThemeToggle className="hidden sm:flex" />
           <LanguageSwitcher className="hidden sm:flex" />
+          <Link
+            to={lp(member ? '/mypage' : '/login')}
+            className="hidden text-xs font-bold uppercase tracking-wider text-ink-300 transition-colors hover:text-ink-50 sm:inline-flex"
+          >
+            {member ? t('member.mypage') : t('member.login')}
+          </Link>
           <Link
             to={lp('/shooting/booking')}
             className="hidden rounded-full bg-brand-600 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-brand-500 sm:inline-flex"
@@ -135,6 +143,12 @@ export default function Header() {
               {t(`nav.${item.key}`)}
             </NavLink>
           ))}
+          <Link
+            to={lp(member ? '/mypage' : '/login')}
+            className="border-b border-ink-800/70 py-3.5 text-sm font-bold uppercase tracking-wider text-ink-300"
+          >
+            {member ? t('member.mypage') : t('member.login')}
+          </Link>
           <div className="flex items-center justify-between gap-4 pt-5">
             <div className="flex items-center gap-2">
               <LanguageSwitcher />

@@ -365,5 +365,27 @@
     "policyDeposit": "ご予約時に料金の50%を予約金としてお振込いただくとスケジュールが確定します。残金は撮影日の2週間前までにお振込ください。",
     "policyImminent": "撮影日が2週間以内の場合は全額を一度にお振込ください。",
     "policyRefund": "スタジオ側の事由でない場合、返金は致しかねます。"
+  },
+  "member": {
+    "login": "ログイン",
+    "signup": "会員登録",
+    "email": "メール",
+    "password": "パスワード",
+    "name": "お名前",
+    "phone": "連絡先",
+    "loginCta": "ログイン",
+    "signupCta": "会員登録",
+    "noAccount": "アカウントをお持ちでないですか？",
+    "haveAccount": "すでにアカウントをお持ちですか？",
+    "mypage": "マイページ",
+    "logout": "ログアウト",
+    "myBookings": "予約履歴",
+    "welcome": "様",
+    "noBookings": "予約履歴がありません。",
+    "goBooking": "撮影を予約する",
+    "lookupHint": "予約番号で照会するには",
+    "loginFail": "ログインに失敗しました。",
+    "signupFail": "会員登録に失敗しました。",
+    "passwordRule": "パスワードは8文字以上で入力してください。"
   }
 }
