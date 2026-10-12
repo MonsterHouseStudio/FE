@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ApiError, api } from '@/lib/api'
 import { useLocale, useLocalePath } from '@/hooks/useLocale'
-import { cn, formatDate, formatPrice, formatTime } from '@/lib/utils'
+import { cn, formatDate, formatKoreanPhone, formatPrice, formatTime } from '@/lib/utils'
 import { calcTotal, formatProductPrice } from '@/lib/price'
 import { BANK_ACCOUNT, computePaymentPlan } from '@/lib/payment'
 import type { Booking, Product } from '@/types'
@@ -411,9 +411,15 @@ export default function BookingPage() {
                       <input
                         id="phone"
                         className="field"
+                        type="tel"
+                        inputMode="numeric"
+                        autoComplete="tel"
+                        maxLength={13}
                         placeholder={t('booking.phonePlaceholder')}
                         value={form.phone}
-                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        onChange={(e) =>
+                          setForm({ ...form, phone: formatKoreanPhone(e.target.value) })
+                        }
                       />
                       {errors.phone && <p className="mt-2 text-xs text-red-400">{errors.phone}</p>}
                     </div>
