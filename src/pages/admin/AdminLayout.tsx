@@ -12,6 +12,7 @@ const MENU = [
   { key: 'homeStats', path: '/admin/home-stats', end: false, icon: '＃' },
   { key: 'products', path: '/admin/products', end: false, icon: '◎' },
   { key: 'bookings', path: '/admin/bookings', end: false, icon: '▦' },
+  { key: 'members', path: '/admin/members', end: false, icon: '☺' },
   { key: 'calendar', path: '/admin/calendar', end: false, icon: '▣' },
   { key: 'schedule', path: '/admin/schedule', end: false, icon: '◇' },
   { key: 'gallery', path: '/admin/gallery', end: false, icon: '▨' },

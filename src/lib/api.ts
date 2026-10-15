@@ -25,6 +25,7 @@ import type {
   BannerSavePayload,
   AvailabilityOverride,
   AvailabilityOverridePayload,
+  AdminMember,
   Booking,
   BookingCreatePayload,
   BookingStatus,
@@ -561,6 +562,13 @@ export const adminApi = {
 
   deleteCompetition: (id: number) =>
     adminRequest<void>(`/admin/competitions/${id}`, { method: 'DELETE' }),
+
+  // ----- 고객 회원 -----
+  getMembers: () => adminRequest<AdminMember[]>('/admin/members'),
+
+  getMemberBookings: (id: number) => adminRequest<Booking[]>(`/admin/members/${id}/bookings`),
+
+  deleteMember: (id: number) => adminRequest<void>(`/admin/members/${id}`, { method: 'DELETE' }),
 
   // ----- 미디어 글 -----
   getPosts: () => adminRequest<AdminPost[]>('/admin/posts'),

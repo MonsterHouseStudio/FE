@@ -525,6 +525,15 @@ export interface HomeStatSavePayload {
   sortOrder: number
 }
 
+/** 관리자 — 고객 회원 */
+export interface AdminMember {
+  id: number
+  email: string
+  name: string
+  phone: string
+  createdAt: string
+}
+
 /* ===================== 소개 페이지 (About) ===================== */
 
 /** 소개 인트로(메인 배너) — 공개용. */
